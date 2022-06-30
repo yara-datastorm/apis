@@ -1,0 +1,11 @@
+uvicorn
+fastapi
+requests
+pytest
+
+email-validator
+
+pandas
+sklearn
+
+python-multipart
