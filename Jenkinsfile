@@ -13,7 +13,8 @@ pipeline {
                 stage('Build Docker Image') {
                     steps {
                         sh 'ls -l'
-                        echo '${env.DOCKER_IMAGE_TAG_NAME}:${env.DOCKER_IMAGE_TAG_VERSION}'
+                        sh 'pwd'
+                        // echo '${env.DOCKER_IMAGE_TAG_NAME}:${env.DOCKER_IMAGE_TAG_VERSION}'
                         sh 'docker build -t $env.DOCKER_IMAGE_TAG_NAME:$env.DOCKER_IMAGE_TAG_VERSION .'
                     }
                 }
