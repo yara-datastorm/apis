@@ -4,6 +4,8 @@ pipeline {
         DOCKER_IMAGE_TAG_NAME = "dss"
         DOCKER_IMAGE_TAG_VERSION = 1.0
 
+        DOCKER_CONTAINER_NAME_TEST = "dss"
+
         DOCKER_CONTAINER_INTERNAL_PORT = 8080
         DOCKER_CONTAINER_EXTERNAL_PORT = 7997
     }
@@ -14,7 +16,7 @@ pipeline {
         stage('Building Image') {
             steps{
                 script {
-                    sh "docker build -t $DOCKER_IMAGE_TAG_NAME:1.0 ."
+                    sh "docker build -t $DOCKER_IMAGE_TAG_NAME:$DOCKER_IMAGE_TAG_VERSION ."
                 }
             }
         }
@@ -23,8 +25,8 @@ pipeline {
         stage('Run Unit Test image') {
             steps{
                 script {
-                    sh "docker run -it -d --name dss dss:1.0 pwd"
-                    sh "docker rm -f dss"
+                    sh "docker run -it -d --name $DOCKER_CONTAINER_NAME_TEST $DOCKER_IMAGE_TAG_NAME:$DOCKER_IMAGE_TAG_VERSION pwd"
+                    sh "docker rm -f $DOCKER_CONTAINER_NAME_TEST"
                 }
             }
         }
