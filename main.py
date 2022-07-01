@@ -1,22 +1,21 @@
 import uvicorn, os
-from fastapi import FastAPI
+from fastapi import FastAPI, UploadFile, File
 
-from models.LinearRegressor import router as linear_regressor_router
-from models.LogisticRegressor import router as logistic_regressor_router
-# from vendeur.main import router as vendeur_router
+from mlearning import regressor_router
+from commons import common_router
 
 
 app = FastAPI(
-    title="YARA",
-    description="""**Linear Regressor**""",
+    title="YARA-DataStorm",
+    description="""**ML APP**""",
     version="0.0.1",
     contact={
         "name": "Armel DREY",
         "email": "armeldrey@gmail.com",
     },
 )
-app.include_router(linear_regressor_router, tags=["RegressorLinear"], prefix="/linear_regressor")
-app.include_router(logistic_regressor_router,tags=["Regressorlogistic"], prefix="/logistic_regressor")
+# app.include_router(linear_regressor_router, tags=["RegressorLinear"], prefix="/linear_regressor")
+# app.include_router(logistic_regressor_router,tags=["Regressorlogistic"], prefix="/logistic_regressor")
 # app.include_router(vendeur_router,tags=["vendeur"], prefix="/ventesim")
 
 
@@ -25,11 +24,15 @@ APP_RELOAD = os.environ.get("APP_RELOAD", default=False)
 APP_WORKERS = os.environ.get("APP_WORKERS", default=1)
 
 
-# subapi = FastAPI()
-# @subapi.get("/sub")
-# def read_sub():
-#     return {"message": "Hello World from sub API"}
-# app.mount("/subapi", subapi)
+
+
+# app.mount("/models", regressor_router)
+# app.mount("/subapi2", regressor_router)
+# app.include_router(regressor_router)
+
+app.include_router(regressor_router, prefix="/regressor")
+app.include_router(common_router, prefix="/common")
+
 
 # http://test.localhost:8017/subapi/docs#/
 
