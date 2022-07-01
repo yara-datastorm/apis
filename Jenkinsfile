@@ -22,7 +22,7 @@ pipeline {
         }
 
 
-        stage('Run Unit Test image') {
+        stage('Run and Unit Test') {
             steps{
                 script {
                     try {
@@ -31,14 +31,15 @@ pipeline {
                         echo 'Exception occurred: ' + e.toString()
                     }
                     
-                    sh "docker run -it -d -p $DOCKER_CONTAINER_EXTERNAL_PORT:$DOCKER_CONTAINER_INTERNAL_PORT -v \$(pwd):/usr/src/app --name $DOCKER_CONTAINER_NAME_TEST $DOCKER_IMAGE_TAG_NAME:$DOCKER_IMAGE_TAG_VERSION pytest --verbose --junit-xml=reports/results.xml test_main.py"
-           
+                    sh "docker run -it -d -p $DOCKER_CONTAINER_EXTERNAL_PORT:$DOCKER_CONTAINER_INTERNAL_PORT --name $DOCKER_CONTAINER_NAME_TEST $DOCKER_IMAGE_TAG_NAME:$DOCKER_IMAGE_TAG_VERSION"
                     
-                    sh "echo \$(pwd)"
-                    sh "ls -l \$(pwd)"
+                    sh "docker exec -it $DOCKER_CONTAINER_NAME_TEST pytest --verbose --junit-xml=reports/results.xml tests/ && exit"
+                    
+                    sh "docker cp $DOCKER_CONTAINER_NAME_TEST:/usr/src/app/reports $(pwd)"
+                    
                     sh "cd \$(pwd)"
-                    // sh "pytest -v --junitxml='reports/regressor.xml'"
                     sh "ls -l"
+
                     // sh "junit /reports/junit/*.xml"
 
                 }
