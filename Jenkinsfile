@@ -12,8 +12,9 @@ pipeline {
             parallel {
                 stage('Build Docker Image') {
                     steps {
+                        sh 'ls -l'
                         echo '${env.DOCKER_IMAGE_TAG_NAME}:${env.DOCKER_IMAGE_TAG_VERSION}'
-                        sh 'docker build -t ${env.DOCKER_IMAGE_TAG_NAME}:${env.DOCKER_IMAGE_TAG_VERSION} .'
+                        sh 'docker build -t $env.DOCKER_IMAGE_TAG_NAME:$env.DOCKER_IMAGE_TAG_VERSION .'
                     }
                 }
                 stage('Run Docker Container') {
