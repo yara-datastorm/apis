@@ -1,31 +1,55 @@
 pipeline {
     agent any
     environment {
-        DOCKER_IMAGE_TAG_NAME = 'datastorm'
-        DOCKER_IMAGE_TAG_VERSION = '1.0'
+        DOCKER_IMAGE_TAG_NAME = "datastorm"
+        DOCKER_IMAGE_TAG_VERSION = 1.0
 
-        DOCKER_CONTAINER_INTERNAL_PORT = '8080'
-        DOCKER_CONTAINER_EXTERNAL_PORT = '7997'
+        DOCKER_CONTAINER_INTERNAL_PORT = 8080
+        DOCKER_CONTAINER_EXTERNAL_PORT = 7997
     }
     stages {
-        stage('Build') {
-            parallel {
-                stage('Build Docker Image') {
-                    steps {
-                        sh 'ls -l'
-                        sh 'pwd'
-                        // echo '${env.DOCKER_IMAGE_TAG_NAME}:${env.DOCKER_IMAGE_TAG_VERSION}'
-                        sh 'docker build -t $env.DOCKER_IMAGE_TAG_NAME:$env.DOCKER_IMAGE_TAG_VERSION .'
-                    }
-                }
-                stage('Run Docker Container') {
-                    steps {
-                        echo 'docker run --name ds -d -p ${env.DOCKER_CONTAINER_EXTERNAL_PORT}:${env.DOCKER_CONTAINER_INTERNAL_PORT} ${env.DOCKER_IMAGE_TAG_NAME}:${env.DOCKER_IMAGE_TAG_VERSION}'
-                        sh 'docker run --name ds -d -p ${env.DOCKER_CONTAINER_EXTERNAL_PORT}:${env.DOCKER_CONTAINER_INTERNAL_PORT} ${env.DOCKER_IMAGE_TAG_NAME}:${env.DOCKER_IMAGE_TAG_VERSION}'
-                    }
-                }
+            
+        stage('echo var') {
+            steps {
+                // echo '${env.DOCKER_IMAGE_TAG_NAME}:${env.DOCKER_IMAGE_TAG_VERSION}'
+                echo '$env.DOCKER_IMAGE_TAG_NAME'
+                echo '${env.DOCKER_IMAGE_TAG_VERSION}'
             }
         }
+            
+        stage('Build Docker Image') {
+            steps {
+                sh 'ls -l'
+                sh 'pwd'
+                // echo '${env.DOCKER_IMAGE_TAG_NAME}:${env.DOCKER_IMAGE_TAG_VERSION}'
+                sh 'docker build -t $env.DOCKER_IMAGE_TAG_NAME:$env.DOCKER_IMAGE_TAG_VERSION .'
+            }
+        }
+        stage('Run Docker Container') {
+            steps {
+                echo 'docker run --name ds -d -p ${env.DOCKER_CONTAINER_EXTERNAL_PORT}:${env.DOCKER_CONTAINER_INTERNAL_PORT} ${env.DOCKER_IMAGE_TAG_NAME}:${env.DOCKER_IMAGE_TAG_VERSION}'
+                sh 'docker run --name ds -d -p ${env.DOCKER_CONTAINER_EXTERNAL_PORT}:${env.DOCKER_CONTAINER_INTERNAL_PORT} ${env.DOCKER_IMAGE_TAG_NAME}:${env.DOCKER_IMAGE_TAG_VERSION}'
+            }
+        }
+            
+        // stage('Build') {
+        //     // parallel {
+        //     //     stage('Build Docker Image') {
+        //     //         steps {
+        //     //             sh 'ls -l'
+        //     //             sh 'pwd'
+        //     //             // echo '${env.DOCKER_IMAGE_TAG_NAME}:${env.DOCKER_IMAGE_TAG_VERSION}'
+        //     //             sh 'docker build -t $env.DOCKER_IMAGE_TAG_NAME:$env.DOCKER_IMAGE_TAG_VERSION .'
+        //     //         }
+        //     //     }
+        //     //     stage('Run Docker Container') {
+        //     //         steps {
+        //     //             echo 'docker run --name ds -d -p ${env.DOCKER_CONTAINER_EXTERNAL_PORT}:${env.DOCKER_CONTAINER_INTERNAL_PORT} ${env.DOCKER_IMAGE_TAG_NAME}:${env.DOCKER_IMAGE_TAG_VERSION}'
+        //     //             sh 'docker run --name ds -d -p ${env.DOCKER_CONTAINER_EXTERNAL_PORT}:${env.DOCKER_CONTAINER_INTERNAL_PORT} ${env.DOCKER_IMAGE_TAG_NAME}:${env.DOCKER_IMAGE_TAG_VERSION}'
+        //     //         }
+        //     //     }
+        //     // }
+        // }
 
         stage('Test') {
             steps {
