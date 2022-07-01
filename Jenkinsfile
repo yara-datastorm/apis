@@ -14,7 +14,7 @@ pipeline {
         stage('Building image') {
             steps{
                 script {
-                sh "docker build -t dss:1.0 nginx"
+                sh "docker build -t dss:1.0 ."
                 }
             }
         }
