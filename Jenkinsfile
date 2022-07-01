@@ -25,9 +25,18 @@ pipeline {
         stage('Run Unit Test image') {
             steps{
                 script {
-                    sh "docker run -it -d --name $DOCKER_CONTAINER_NAME_TEST $DOCKER_IMAGE_TAG_NAME:$DOCKER_IMAGE_TAG_VERSION pwd"
-                    sh "docker rm -f $DOCKER_CONTAINER_NAME_TEST"
+                    try {
+                        sh "docker rm -f $DOCKER_CONTAINER_NAME_TEST"
+                        sh "docker run -it -d --name $DOCKER_CONTAINER_NAME_TEST $DOCKER_IMAGE_TAG_NAME:$DOCKER_IMAGE_TAG_VERSION pwd"
+                    } catch (Exception e) {
+                        echo 'Exception occurred: ' + e.toString()
+                        sh "docker run -it -d --name $DOCKER_CONTAINER_NAME_TEST $DOCKER_IMAGE_TAG_NAME:$DOCKER_IMAGE_TAG_VERSION pwd"
+                    }
                 }
+
+                sh "ls"
+                // sh "pytest -v --junitxml='report.xml'"
+
             }
         }
 
