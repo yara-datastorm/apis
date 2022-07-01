@@ -7,6 +7,8 @@ pipeline {
         DOCKER_CONTAINER_INTERNAL_PORT = 8080
         DOCKER_CONTAINER_EXTERNAL_PORT = 7997
     }
+    def app 
+    
     stages {
             
         stage('Build Docker Image') {
@@ -16,9 +18,8 @@ pipeline {
                 // // echo '${env.DOCKER_IMAGE_TAG_NAME}:${env.DOCKER_IMAGE_TAG_VERSION}'
                 // sh 'docker build -t $env.DOCKER_IMAGE_TAG_NAME:$env.DOCKER_IMAGE_TAG_VERSION .'
 
-                script {
-                    app = docker.build("yara/ds")
-                }
+                app = docker.build("yara/ds")
+                
 
             }
         }
