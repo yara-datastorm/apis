@@ -1,11 +1,23 @@
 pipeline {
     agent any
+    environment {
+        DOCKER_IMAGE_TAG_NAME = 'datastorm'
+        DOCKER_IMAGE_TAG_VERSION = '1.0'
+
+        DOCKER_CONTAINER_INTERNAL_PORT = '8080'
+        DOCKER_CONTAINER_EXTERNAL_PORT = '7997'
+    }
     stages {
         stage('Build') {
             parallel {
-                stage('Build') {
+                stage('Build Docker Image') {
                     steps {
-                        sh 'echo "building the repo"'
+                        sh 'docker build -t ${env.DOCKER_IMAGE_TAG_NAME}:${env.DOCKER_IMAGE_TAG_VERSION} .'
+                    }
+                }
+                stage('Run Docker Container') {
+                    steps {
+                        sh 'docker run --name ds -d -p ${env.DOCKER_CONTAINER_EXTERNAL_PORT}:${env.DOCKER_CONTAINER_INTERNAL_PORT} ${env.DOCKER_IMAGE_TAG_NAME}:${env.DOCKER_IMAGE_TAG_VERSION}'
                     }
                 }
             }
@@ -41,3 +53,4 @@ pipeline {
 	// 	}
 	// }   
 }
+
