@@ -1,7 +1,7 @@
 pipeline {
     agent any
     environment {
-        DOCKER_IMAGE_TAG_NAME = "nginx"  // "datastorm"
+        DOCKER_IMAGE_TAG_NAME = "datastorm"
         DOCKER_IMAGE_TAG_VERSION = 1.0
 
         DOCKER_CONTAINER_INTERNAL_PORT = 8080
@@ -14,7 +14,7 @@ pipeline {
         stage('Building image') {
             steps{
                 script {
-                dockerImage = docker.build DOCKER_IMAGE_TAG_NAME
+                sh "docker build -t dss:1.0 nginx"
                 }
             }
         }
