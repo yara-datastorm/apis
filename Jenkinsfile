@@ -34,7 +34,7 @@ pipeline {
                     }
                 }
 
-                sh "ls"
+                sh "pwd()"
                 // sh "pytest -v --junitxml='reports/regressor.xml'"
                 // sh "junit /reports/junit/*.xml"
 
