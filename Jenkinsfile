@@ -35,7 +35,7 @@ pipeline {
                 }
 
                 sh "pwd"
-                sh "ls -l $WORKSPACE"
+                sh "ls -l $JENKINS_HOME"
                 // sh "pytest -v --junitxml='reports/regressor.xml'"
                 // sh "junit /reports/junit/*.xml"
 
