@@ -13,7 +13,7 @@ pipeline {
 
     stages {
             
-        stage('Building Image') {
+        stage('Build') {
             steps{
                 script {
                     sh "docker build -t $DOCKER_IMAGE_TAG_NAME:$DOCKER_IMAGE_TAG_VERSION ."
@@ -35,7 +35,7 @@ pipeline {
                     
                     sh "docker exec -it $DOCKER_CONTAINER_NAME_TEST pytest --verbose --junit-xml=reports/results.xml tests/ && exit"
                     
-                    sh "docker cp $DOCKER_CONTAINER_NAME_TEST:/usr/src/app/reports $(pwd)"
+                    sh "docker cp $DOCKER_CONTAINER_NAME_TEST:/usr/src/app/reports \$(pwd)"
                     
                     sh "cd \$(pwd)"
                     sh "ls -l"
