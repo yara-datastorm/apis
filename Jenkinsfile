@@ -27,10 +27,10 @@ pipeline {
                 script {
                     try {
                         sh "docker rm -f $DOCKER_CONTAINER_NAME_TEST"
-                        sh "docker run -it -d --name $DOCKER_CONTAINER_NAME_TEST $DOCKER_IMAGE_TAG_NAME:$DOCKER_IMAGE_TAG_VERSION pwd"
+                        sh "docker run -it -d -p $DOCKER_CONTAINER_EXTERNAL_PORT:$DOCKER_CONTAINER_INTERNAL_PORT --name $DOCKER_CONTAINER_NAME_TEST $DOCKER_IMAGE_TAG_NAME:$DOCKER_IMAGE_TAG_VERSION pwd"
                     } catch (Exception e) {
                         echo 'Exception occurred: ' + e.toString()
-                        sh "docker run -it -d --name $DOCKER_CONTAINER_NAME_TEST $DOCKER_IMAGE_TAG_NAME:$DOCKER_IMAGE_TAG_VERSION pwd"
+                        sh "docker run -it -d -p $DOCKER_CONTAINER_EXTERNAL_PORT:$DOCKER_CONTAINER_INTERNAL_PORT --name $DOCKER_CONTAINER_NAME_TEST $DOCKER_IMAGE_TAG_NAME:$DOCKER_IMAGE_TAG_VERSION pwd"
                     }
                     
                     sh "echo \$(pwd)"
