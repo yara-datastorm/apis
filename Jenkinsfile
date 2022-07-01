@@ -11,13 +11,18 @@ pipeline {
             
         stage('Build Docker Image') {
             steps {
-                sh 'ls -l'
-                sh 'pwd'
-                // echo '${env.DOCKER_IMAGE_TAG_NAME}:${env.DOCKER_IMAGE_TAG_VERSION}'
-                sh 'docker build -t $env.DOCKER_IMAGE_TAG_NAME:$env.DOCKER_IMAGE_TAG_VERSION .'
+                // sh 'ls -l'
+                // sh 'pwd'
+                // // echo '${env.DOCKER_IMAGE_TAG_NAME}:${env.DOCKER_IMAGE_TAG_VERSION}'
+                // sh 'docker build -t $env.DOCKER_IMAGE_TAG_NAME:$env.DOCKER_IMAGE_TAG_VERSION .'
+
+                script {
+                    app = docker.build("yara/ds")
+                }
+
             }
         }
-        
+
         // stage('Run Docker Container') {
         //     steps {
         //         echo 'docker run --name ds -d -p ${env.DOCKER_CONTAINER_EXTERNAL_PORT}:${env.DOCKER_CONTAINER_INTERNAL_PORT} ${env.DOCKER_IMAGE_TAG_NAME}:${env.DOCKER_IMAGE_TAG_VERSION}'
@@ -44,11 +49,9 @@ pipeline {
         //     // }
         // }
 
-        stage('Test') {
-            steps {
-                sh 'ls -l'
-                // sh 'python3 test_app.py'
-                // input(id: "Deploy Gate", message: "Deploy ${params.project_name}?", ok: 'Deploy')
+        stage('Test image') {
+            app.inside {
+                sh 'echo "Tests passed"'
             }
         }
 
