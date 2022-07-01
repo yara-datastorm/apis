@@ -9,15 +9,6 @@ pipeline {
     }
     stages {
             
-        stage('echo var') {
-            steps {
-                // echo '${env.DOCKER_IMAGE_TAG_NAME}:${env.DOCKER_IMAGE_TAG_VERSION}'
-                sh 'echo $DOCKER_IMAGE_TAG_VERSION'
-                sh 'echo $env.DOCKER_IMAGE_TAG_NAME'
-                sh 'echo ${env.DOCKER_IMAGE_TAG_VERSION}'
-            }
-        }
-            
         stage('Build Docker Image') {
             steps {
                 sh 'ls -l'
@@ -26,12 +17,13 @@ pipeline {
                 sh 'docker build -t $env.DOCKER_IMAGE_TAG_NAME:$env.DOCKER_IMAGE_TAG_VERSION .'
             }
         }
-        stage('Run Docker Container') {
-            steps {
-                echo 'docker run --name ds -d -p ${env.DOCKER_CONTAINER_EXTERNAL_PORT}:${env.DOCKER_CONTAINER_INTERNAL_PORT} ${env.DOCKER_IMAGE_TAG_NAME}:${env.DOCKER_IMAGE_TAG_VERSION}'
-                sh 'docker run --name ds -d -p ${env.DOCKER_CONTAINER_EXTERNAL_PORT}:${env.DOCKER_CONTAINER_INTERNAL_PORT} ${env.DOCKER_IMAGE_TAG_NAME}:${env.DOCKER_IMAGE_TAG_VERSION}'
-            }
-        }
+        
+        // stage('Run Docker Container') {
+        //     steps {
+        //         echo 'docker run --name ds -d -p ${env.DOCKER_CONTAINER_EXTERNAL_PORT}:${env.DOCKER_CONTAINER_INTERNAL_PORT} ${env.DOCKER_IMAGE_TAG_NAME}:${env.DOCKER_IMAGE_TAG_VERSION}'
+        //         sh 'docker run --name ds -d -p ${env.DOCKER_CONTAINER_EXTERNAL_PORT}:${env.DOCKER_CONTAINER_INTERNAL_PORT} ${env.DOCKER_IMAGE_TAG_NAME}:${env.DOCKER_IMAGE_TAG_VERSION}'
+        //     }
+        // }
             
         // stage('Build') {
         //     // parallel {
@@ -60,12 +52,13 @@ pipeline {
             }
         }
 
-        stage('Deploy') {
-            steps {
-                echo "deploying the application"
-                sh "sudo nohup python3 app.py > log.txt 2>&1 &"
-            }
-        }
+        // stage('Deploy') {
+        //     steps {
+        //         echo "deploying the application"
+        //         sh "sudo nohup python3 app.py > log.txt 2>&1 &"
+        //     }
+        // }
+
     }
 
     // post {
