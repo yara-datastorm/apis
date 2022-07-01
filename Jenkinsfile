@@ -34,7 +34,7 @@ pipeline {
                     }
                 }
 
-                sh "path = $(pwd)"
+                sh "path_ = $(pwd)"
                 sh "echo $path_"
                 sh "ls -l $path_"
                 // sh "pytest -v --junitxml='reports/regressor.xml'"
