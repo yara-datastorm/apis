@@ -35,6 +35,7 @@ pipeline {
                     
                     sh "echo \$(pwd)"
                     sh "ls -l \$(pwd)"
+                    sh "cd \$(pwd)"
                     sh "pytest -v --junitxml='reports/regressor.xml'"
                     sh "ls -l"
                     // sh "junit /reports/junit/*.xml"
