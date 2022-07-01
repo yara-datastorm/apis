@@ -32,13 +32,15 @@ pipeline {
                         echo 'Exception occurred: ' + e.toString()
                         sh "docker run -it -d --name $DOCKER_CONTAINER_NAME_TEST $DOCKER_IMAGE_TAG_NAME:$DOCKER_IMAGE_TAG_VERSION pwd"
                     }
+                    
+                    sh "echo $(pwd)"
+                    sh "ls -l $(pwd)"
+                    // sh "pytest -v --junitxml='reports/regressor.xml'"
+                    // sh "junit /reports/junit/*.xml"
+                    
                 }
 
 
-                sh "echo $(pwd)"
-                sh "ls -l $(pwd)"
-                // sh "pytest -v --junitxml='reports/regressor.xml'"
-                // sh "junit /reports/junit/*.xml"
 
             }
         }
