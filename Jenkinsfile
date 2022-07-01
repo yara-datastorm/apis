@@ -27,11 +27,12 @@ pipeline {
                 script {
                     try {
                         sh "docker rm -f $DOCKER_CONTAINER_NAME_TEST"
-                        sh "docker run -it -d -p $DOCKER_CONTAINER_EXTERNAL_PORT:$DOCKER_CONTAINER_INTERNAL_PORT --name $DOCKER_CONTAINER_NAME_TEST $DOCKER_IMAGE_TAG_NAME:$DOCKER_IMAGE_TAG_VERSION pytest -v --junitxml='reports/regressor.xml'"
                     } catch (Exception e) {
                         echo 'Exception occurred: ' + e.toString()
-                        sh "docker run -it -d -p $DOCKER_CONTAINER_EXTERNAL_PORT:$DOCKER_CONTAINER_INTERNAL_PORT --name $DOCKER_CONTAINER_NAME_TEST $DOCKER_IMAGE_TAG_NAME:$DOCKER_IMAGE_TAG_VERSION pytest -v --junitxml='reports/regressor.xml'"
                     }
+                    
+                    sh "docker run -it -d -p $DOCKER_CONTAINER_EXTERNAL_PORT:$DOCKER_CONTAINER_INTERNAL_PORT -v \$(pwd):/usr/src/app --name $DOCKER_CONTAINER_NAME_TEST $DOCKER_IMAGE_TAG_NAME:$DOCKER_IMAGE_TAG_VERSION pytest --verbose --junit-xml=reports/results.xml test_main.py"
+           
                     
                     sh "echo \$(pwd)"
                     sh "ls -l \$(pwd)"
@@ -42,6 +43,7 @@ pipeline {
 
                 }
 
+            // pytest --verbose --junit-xml=test-reports/results.xml test_api.py
 
 
             }
