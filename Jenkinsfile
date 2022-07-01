@@ -12,9 +12,9 @@ pipeline {
         stage('echo var') {
             steps {
                 // echo '${env.DOCKER_IMAGE_TAG_NAME}:${env.DOCKER_IMAGE_TAG_VERSION}'
-                echo '$DOCKER_IMAGE_TAG_VERSION'
-                echo '$env.DOCKER_IMAGE_TAG_NAME'
-                echo '${env.DOCKER_IMAGE_TAG_VERSION}'
+                sh 'echo $DOCKER_IMAGE_TAG_VERSION'
+                sh 'echo $env.DOCKER_IMAGE_TAG_NAME'
+                sh 'echo ${env.DOCKER_IMAGE_TAG_VERSION}'
             }
         }
             
