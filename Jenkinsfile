@@ -34,8 +34,9 @@ pipeline {
                     }
                 }
 
-                sh "pwd"
-                sh "ls -l $JENKINS_HOME"
+                sh "path = $(pwd)"
+                sh "echo $path_"
+                sh "ls -l $path_"
                 // sh "pytest -v --junitxml='reports/regressor.xml'"
                 // sh "junit /reports/junit/*.xml"
 
