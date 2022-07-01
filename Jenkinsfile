@@ -37,10 +37,10 @@ pipeline {
                     
                     sh "docker cp $DOCKER_CONTAINER_NAME_TEST:/usr/src/app/reports \$(pwd)"
                     
-                    sh "cd \$(pwd)"
-                    sh "ls -l"
+                    // sh "cd \$(pwd)"
+                    // sh "ls -l"
 
-                    // sh "junit /reports/junit/*.xml"
+                    junit "reports/*.xml"
 
                 }
 
