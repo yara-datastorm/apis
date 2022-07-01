@@ -33,7 +33,7 @@ pipeline {
                     
                     sh "docker run -it -d -p $DOCKER_CONTAINER_EXTERNAL_PORT:$DOCKER_CONTAINER_INTERNAL_PORT --name $DOCKER_CONTAINER_NAME_TEST $DOCKER_IMAGE_TAG_NAME:$DOCKER_IMAGE_TAG_VERSION"
                     
-                    sh "docker exec -it $DOCKER_CONTAINER_NAME_TEST pytest --verbose --junit-xml=reports/results.xml tests/ && exit"
+                    sh "winpty docker exec -it $DOCKER_CONTAINER_NAME_TEST pytest --verbose --junit-xml=reports/results.xml tests/ && exit"
                     
                     sh "docker cp $DOCKER_CONTAINER_NAME_TEST:/usr/src/app/reports \$(pwd)"
                     
