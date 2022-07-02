@@ -60,7 +60,7 @@ pipeline {
                 // sh 'echo "$IMAGE_TAG_NAME:$IMAGE_TAG_VERSION" > anchore_images'
                 // anchore name: 'anchore_images'
 
-                writeFile file: 'anchore_images', text: '$IMAGE_TAG_NAME:$IMAGE_TAG_VERSION'  
+                writeFile file: 'anchore_images', text: 'dss:1.0'  
                     anchore name: 'anchore_images'
                 }
         }
