@@ -11,6 +11,8 @@ pipeline {
 
         CTN_INTERNAL_PORT = 8080
         CTN_EXTERNAL_PORT = 7997
+
+        IMAGE_NAME = ${IMAGE_TAG_NAME}:${BUILD_NUMBER}
     }
 
 
@@ -55,7 +57,7 @@ pipeline {
                     } catch (Exception e) {
                         echo 'Exception occurred: ' + e.toString()
                     }
-                    sh 'docker run --rm -v "//var/run/docker.sock:/var/run/docker.sock" --mount type=bind,source="\$(pwd)"/vuln-scan,target=/home aquasec/trivy:0.18.3 image --format template --template @contrib/html.tpl -o ./home/trivy-ci-report-os-library.html --ignore-unfixed --exit-code 0 --vuln-type os,library  --severity CRITICAL,HIGH $IMAGE_TAG_NAME:$BUILD_NUMBER'
+                    sh 'docker run --rm -v "//var/run/docker.sock:/var/run/docker.sock" --mount type=bind,source="\$(pwd)"/vuln-scan,target=/home aquasec/trivy:0.18.3 image --format template --template @contrib/html.tpl -o ./home/trivy-ci-report-os-library$BUILD_NUMBER.html --ignore-unfixed --exit-code 0 --vuln-type os,library  --severity CRITICAL,HIGH $IMAGE_TAG_NAME:$BUILD_NUMBER'
                 
                 }
             }
@@ -78,21 +80,21 @@ pipeline {
         }
         
             
-        stage('Verify') {
-            steps{
-                script {
-                    docker.withRegistry('', registryCredential ) {
-                        dockerImage.push()
-                    }
-                }
-            }
-        }
+        // stage('Verify') {
+        //     steps{
+        //         script {
+        //             docker.withRegistry('', registryCredential ) {
+        //                 dockerImage.push()
+        //             }
+        //         }
+        //     }
+        // }
             
 
         stage('Deploy') {
             steps{
                 script {
-                    sh 'my_image=70077007/$IMAGE_TAG_NAME:$BUILD_NUMBER envsubst < k8s/deploy.yml.tmpl > k8s/mydeploy.yaml'
+                    sh 'my_image=$IMAGE_NAME envsubst < k8s/deploy.yml.tmpl > k8s/mydeploy.yaml'
                     sh 'kubectl apply -f k8s/ --recursive'
                 }
             }
