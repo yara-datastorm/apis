@@ -3,6 +3,7 @@ pipeline {
     environment {
         IMAGE_TAG_NAME = "dss"
         IMAGE_TAG_VERSION = 1.0
+        IMAGE_VULNERABILITY = "medium"
 
         CTN_NAME_TEST = "dss"
 
@@ -47,7 +48,7 @@ pipeline {
         stage('Evaluate') {
             steps{
                 script{
-                    sh 'docker scan --severity high dss:1.0'
+                    sh 'docker scan --severity $IMAGE_VULNERABILITY dss:1.0'
                 }
             }
         }
