@@ -11,7 +11,7 @@ pipeline {
 
     environment {
         IMAGE_TAG_NAME = "dss"
-        IMAGE_TAG_VERSION = 1.0
+        IMAGE_TAG_VERSION = $BUILD_NUMBER
         IMAGE_VULNERABILITY = "medium"
 
         CTN_NAME_TEST = "dss"
@@ -49,24 +49,36 @@ pipeline {
                     
                     junit "reports/*.xml"
                 }
-
-                // pytest --verbose --junit-xml=test-reports/results.xml test_api.py
             }
         }
 
 
-        stage('analyze') {
+        stage('Analyze') {
             steps {
                 script {
                     // Scan all library vuln levels
-                    
                     try {
                         sh 'mkdir \$(pwd)/vuln-scan'
                     } catch (Exception e) {
                         echo 'Exception occurred: ' + e.toString()
                     }
-                    sh 'docker run --rm -v "//var/run/docker.sock:/var/run/docker.sock" --mount type=bind,source="\$(pwd)"/vuln-scan,target=/home aquasec/trivy:0.18.3 image --format template --template @contrib/html.tpl -o ./home/trivy-ci-report-os-library.html --ignore-unfixed --exit-code 1 --vuln-type os,library  --severity CRITICAL,HIGH python:3.10-slim'
+                    sh 'docker run --rm -v "//var/run/docker.sock:/var/run/docker.sock" --mount type=bind,source="\$(pwd)"/vuln-scan,target=/home aquasec/trivy:0.18.3 image --format template --template @contrib/html.tpl -o ./home/trivy-ci-report-os-library.html --ignore-unfixed --exit-code 0 --vuln-type os,library  --severity CRITICAL,HIGH $IMAGE_TAG_NAME:$IMAGE_TAG_VERSION'
                 
+                }
+            }
+        }
+
+
+        stage('Build image') {
+            steps {
+                echo 'Starting to build docker image'
+
+                script {
+                    // my-image:${env.BUILD_ID}
+                    docker.withRegistry('', 'dockerHub-access' ) {
+                        def customImage = docker.build("70077007/dss:1.1")
+                        customImage.push()
+                     }
                 }
             }
         }
@@ -85,12 +97,12 @@ pipeline {
 
         
 
-        // stage('analyze') {
+        // stage('analyze cd') {
         //     steps {
         //         // Scan all library vuln  levels        
-        //         docker run --rm -v '//var/run/docker.sock:/var/run/docker.sock' --mount type=bind,source="$(pwd)"/root,target=/home aquasec/trivy:0.18.3 image --format template --template @contrib/html.tpl -o ./home/trivy-dc-report-library.html --ignore-unfixed --exit-code 1 --vuln-type library  --severity CRITICAL,HIGH python:3.10-slim
+        //         docker run --rm -v '//var/run/docker.sock:/var/run/docker.sock' --mount type=bind,source="$(pwd)"/root,target=/home aquasec/trivy:0.18.3 image --format template --template @contrib/html.tpl -o ./home/trivy-dc-report-library.html --ignore-unfixed --exit-code 0 --vuln-type library  --severity CRITICAL,HIGH $IMAGE_TAG_NAME:$IMAGE_TAG_VERSION
         //         // Scan all os vuln  levels 
-        //         docker run --rm -v '//var/run/docker.sock:/var/run/docker.sock' --mount type=bind,source="$(pwd)"/root,target=/home aquasec/trivy:0.18.3 image --format template --template @contrib/html.tpl -o ./home/trivy-dc-report-os.html --ignore-unfixed --exit-code 1 --vuln-type os  --severity CRITICAL,HIGH python:3.10-slim
+        //         docker run --rm -v '//var/run/docker.sock:/var/run/docker.sock' --mount type=bind,source="$(pwd)"/root,target=/home aquasec/trivy:0.18.3 image --format template --template @contrib/html.tpl -o ./home/trivy-dc-report-os.html --ignore-unfixed --exit-code 0 --vuln-type os  --severity CRITICAL,HIGH $IMAGE_TAG_NAME:$IMAGE_TAG_VERSION
             
         //     }
         // }
