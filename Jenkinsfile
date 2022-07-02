@@ -44,6 +44,13 @@ pipeline {
                     sh "docker exec $IMAGE_TAG_NAME pytest --verbose --junit-xml=reports/results.xml tests/ && ls"
                     
                     sh "docker cp $IMAGE_TAG_NAME:/usr/src/app/reports \$(pwd)"
+
+                    
+                    try {
+                        sh "docker rm -f $IMAGE_TAG_NAME"
+                    } catch (Exception e) {
+                        echo 'Exception occurred: ' + e.toString()
+                    }
                     
                     junit "reports/*.xml"
                 }
