@@ -55,12 +55,17 @@ pipeline {
         }
 
 
-        stage('analyzeee') {
+        stage('analyze') {
             steps {
                 script {
                     // Scan all library vuln levels
-                    sh 'mkdir \$(pwd)/vuln-scan'
-                    sh 'docker run --rm -v "//var/run/docker.sock:/var/run/docker.sock" --mount type=bind,source="\$(pwd)"/vuln-scan,target=/home aquasec/trivy:0.18.3 image --format template --template @contrib/html.tpl -o ./home/trivy-ci-report-os-library.html --ignore-unfixed --exit-code 1 --vuln-type os,library python:3.10-slim'
+                    
+                    try {
+                        sh 'mkdir \$(pwd)/vuln-scan'
+                    } catch (Exception e) {
+                        echo 'Exception occurred: ' + e.toString()
+                    }
+                    sh 'docker run --rm -v "//var/run/docker.sock:/var/run/docker.sock" --mount type=bind,source="\$(pwd)"/vuln-scan,target=/home aquasec/trivy:0.18.3 image --format template --template @contrib/html.tpl -o ./home/trivy-ci-report-os-library.html --ignore-unfixed --exit-code 1 --vuln-type os,library  --severity CRITICAL,HIGH python:3.10-slim'
                 
                 }
             }
@@ -83,9 +88,9 @@ pipeline {
         // stage('analyze') {
         //     steps {
         //         // Scan all library vuln  levels        
-        //         docker run --rm -v '//var/run/docker.sock:/var/run/docker.sock' --mount type=bind,source="$(pwd)"/root,target=/home aquasec/trivy:0.18.3 image --format template --template @contrib/html.tpl -o ./home/trivy-dc-report-library.html --ignore-unfixed --exit-code 1 --vuln-type library python:3.10-slim
+        //         docker run --rm -v '//var/run/docker.sock:/var/run/docker.sock' --mount type=bind,source="$(pwd)"/root,target=/home aquasec/trivy:0.18.3 image --format template --template @contrib/html.tpl -o ./home/trivy-dc-report-library.html --ignore-unfixed --exit-code 1 --vuln-type library  --severity CRITICAL,HIGH python:3.10-slim
         //         // Scan all os vuln  levels 
-        //         docker run --rm -v '//var/run/docker.sock:/var/run/docker.sock' --mount type=bind,source="$(pwd)"/root,target=/home aquasec/trivy:0.18.3 image --format template --template @contrib/html.tpl -o ./home/trivy-dc-report-os.html --ignore-unfixed --exit-code 1 --vuln-type os python:3.10-slim
+        //         docker run --rm -v '//var/run/docker.sock:/var/run/docker.sock' --mount type=bind,source="$(pwd)"/root,target=/home aquasec/trivy:0.18.3 image --format template --template @contrib/html.tpl -o ./home/trivy-dc-report-os.html --ignore-unfixed --exit-code 1 --vuln-type os  --severity CRITICAL,HIGH python:3.10-slim
             
         //     }
         // }
