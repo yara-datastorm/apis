@@ -13,6 +13,14 @@ pipeline {
  
 
     stages {
+
+        agent {
+            docker {
+                image: 'trivy:latest'
+                args '--group-add docker'
+                reuseNode true
+            }
+        }
             
         // stage('Build') {
         //     steps{
@@ -54,25 +62,30 @@ pipeline {
         // // }
 
 
-       stage('analyze') {
-            steps {
-                // sh 'echo "$IMAGE_TAG_NAME:$IMAGE_TAG_VERSION"'
-                // sh 'echo "$IMAGE_TAG_NAME:$IMAGE_TAG_VERSION" > anchore_images'
-                // anchore name: 'anchore_images'
+    //    stage('analyze') {
+    //         steps {
+    //             // Install trivy
+    //             sh 'curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin v0.18.3'
+    //             sh 'curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/html.tpl > html.tpl'
 
-                app = docker.build('nginx:latest')
+    //             // Scan all vuln levels
+    //             sh 'mkdir -p scan-reports'
+    //             sh 'trivy filesystem --ignore-unfixed --vuln-type os,library --format template --template "@html.tpl" -o scan-reports/nodjs-scan.html ./nodejs'
+    //             publishHTML target : [
+    //                 allowMissing: true,
+    //                 alwaysLinkToLastBuild: true,
+    //                 keepAll: true,
+    //                 reportDir: 'scan-reports',
+    //                 reportFiles: 'nodjs-scan.html',
+    //                 reportName: 'Trivy Scan',
+    //                 reportTitles: 'Trivy Scan'
+    //             ]
 
-                writeFile file: 'anchore_images', text: 'dss:1.0'  
-                    anchore name: 'anchore_images'
-                }
-        }
-        stage('teardown') {
-            steps {
-                sh'''
-                    for i in `cat anchore_images | awk '{print $1}'`;do docker rmi $i; done
-                '''
-            }
-        }
+    //             // Scan again and fail on CRITICAL vulns
+    //             sh 'trivy filesystem --ignore-unfixed --vuln-type os,library --exit-code 1 --severity CRITICAL ./nodejs'
+
+    //         }
+    //     }
             
             
 
