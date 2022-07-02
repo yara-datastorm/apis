@@ -12,7 +12,7 @@ pipeline {
         CTN_INTERNAL_PORT = 8080
         CTN_EXTERNAL_PORT = 7997
     }
-    
+
 
     stages {
             
@@ -77,20 +77,29 @@ pipeline {
         }
         
             
+        stage('Verify') {
+            steps{
+                script {
+                    docker.withRegistry('', registryCredential ) {
+                        dockerImage.push()
+                    }
+                }
+            }
+        }
+            
 
-        // stage(‘Deploy Image’) {
-        //     steps{
-        //         script {
-        //             docker.withRegistry('', registryCredential ) {
-        //                 dockerImage.push()
-        //             }
-        //         }
-        //     }
-        // }
+        stage('Deploy') {
+            steps{
+                script {
+                    sh 'my_image=70077007/$IMAGE_TAG_NAME:$BUILD_NUMBER envsubst < k8s/deploy.yml.tmpl > k8s/mydeploy.yaml'
+                    sh 'kubectl apply -f k8s/ --recursive'
+                }
+            }
+        }
 
         
 
-        // stage('analyze cd') {
+        // stage('analyze code') {
         //     steps {
         //         // Scan all library vuln  levels        
         //         docker run --rm -v '//var/run/docker.sock:/var/run/docker.sock' --mount type=bind,source="$(pwd)"/root,target=/home aquasec/trivy:0.18.3 image --format template --template @contrib/html.tpl -o ./home/trivy-dc-report-library.html --ignore-unfixed --exit-code 0 --vuln-type library  --severity CRITICAL,HIGH $IMAGE_TAG_NAME:$BUILD_NUMBER
