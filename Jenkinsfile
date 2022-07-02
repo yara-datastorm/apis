@@ -1,13 +1,13 @@
 pipeline {
     agent any
     environment {
-        DOCKER_IMAGE_TAG_NAME = "dss"
-        DOCKER_IMAGE_TAG_VERSION = 1.0
+        IMAGE_TAG_NAME = "dss"
+        IMAGE_TAG_VERSION = 1.0
 
-        DOCKER_CONTAINER_NAME_TEST = "dss"
+        CTN_NAME_TEST = "dss"
 
-        DOCKER_CONTAINER_INTERNAL_PORT = 8080
-        DOCKER_CONTAINER_EXTERNAL_PORT = 7997
+        CTN_INTERNAL_PORT = 8080
+        CTN_EXTERNAL_PORT = 7997
     }
  
 
@@ -16,7 +16,7 @@ pipeline {
         stage('Build') {
             steps{
                 script {
-                    sh "docker build -t $DOCKER_IMAGE_TAG_NAME:$DOCKER_IMAGE_TAG_VERSION ."
+                    sh "docker build -t $IMAGE_TAG_NAME:$IMAGE_TAG_VERSION ."
                 }
             }
         }
@@ -26,62 +26,52 @@ pipeline {
             steps{
                 script {
                     try {
-                        sh "docker rm -f $DOCKER_CONTAINER_NAME_TEST"
+                        sh "docker rm -f $CTN_NAME_TEST"
                     } catch (Exception e) {
                         echo 'Exception occurred: ' + e.toString()
                     }
                     
-                    sh "docker run -it -d -p $DOCKER_CONTAINER_EXTERNAL_PORT:$DOCKER_CONTAINER_INTERNAL_PORT --name $DOCKER_CONTAINER_NAME_TEST $DOCKER_IMAGE_TAG_NAME:$DOCKER_IMAGE_TAG_VERSION"
+                    sh "docker run -it -d -p $CTN_EXTERNAL_PORT:$CTN_INTERNAL_PORT --name $CTN_NAME_TEST $IMAGE_TAG_NAME:$IMAGE_TAG_VERSION"
                     
-                    sh "docker exec $DOCKER_CONTAINER_NAME_TEST pytest --verbose --junit-xml=reports/results.xml tests/ && ls"
+                    sh "docker exec $CTN_NAME_TEST pytest --verbose --junit-xml=reports/results.xml tests/ && ls"
                     
-                    sh "docker cp $DOCKER_CONTAINER_NAME_TEST:/usr/src/app/reports \$(pwd)"
+                    sh "docker cp $CTN_NAME_TEST:/usr/src/app/reports \$(pwd)"
                     
-                    // sh "cd \$(pwd)"
-                    // sh "ls -l"
-
                     junit "reports/*.xml"
-
                 }
 
-            // pytest --verbose --junit-xml=test-reports/results.xml test_api.py
-
-
+                // pytest --verbose --junit-xml=test-reports/results.xml test_api.py
+            }
+        }
+        
+        stage('Evaluate') {
+            steps{
+                script{
+                    sh 'docker scan --severity high dss:1.0'
+                }
             }
         }
 
+
         // stage('Run Docker Container') {
         //     steps {
-        //         echo 'docker run --name ds -d -p ${env.DOCKER_CONTAINER_EXTERNAL_PORT}:${env.DOCKER_CONTAINER_INTERNAL_PORT} ${env.DOCKER_IMAGE_TAG_NAME}:${env.DOCKER_IMAGE_TAG_VERSION}'
-        //         sh 'docker run --name ds -d -p ${env.DOCKER_CONTAINER_EXTERNAL_PORT}:${env.DOCKER_CONTAINER_INTERNAL_PORT} ${env.DOCKER_IMAGE_TAG_NAME}:${env.DOCKER_IMAGE_TAG_VERSION}'
+        //         echo 'docker run --name ds -d -p ${env.CTN_EXTERNAL_PORT}:${env.CTN_INTERNAL_PORT} ${env.IMAGE_TAG_NAME}:${env.IMAGE_TAG_VERSION}'
+        //         sh 'docker run --name ds -d -p ${env.CTN_EXTERNAL_PORT}:${env.CTN_INTERNAL_PORT} ${env.IMAGE_TAG_NAME}:${env.IMAGE_TAG_VERSION}'
         //     }
         // }
             
-        // stage('Build') {
-        //     // parallel {
-        //     //     stage('Build Docker Image') {
-        //     //         steps {
-        //     //             sh 'ls -l'
-        //     //             sh 'pwd'
-        //     //             // echo '${env.DOCKER_IMAGE_TAG_NAME}:${env.DOCKER_IMAGE_TAG_VERSION}'
-        //     //             sh 'docker build -t $env.DOCKER_IMAGE_TAG_NAME:$env.DOCKER_IMAGE_TAG_VERSION .'
-        //     //         }
-        //     //     }
-        //     //     stage('Run Docker Container') {
-        //     //         steps {
-        //     //             echo 'docker run --name ds -d -p ${env.DOCKER_CONTAINER_EXTERNAL_PORT}:${env.DOCKER_CONTAINER_INTERNAL_PORT} ${env.DOCKER_IMAGE_TAG_NAME}:${env.DOCKER_IMAGE_TAG_VERSION}'
-        //     //             sh 'docker run --name ds -d -p ${env.DOCKER_CONTAINER_EXTERNAL_PORT}:${env.DOCKER_CONTAINER_INTERNAL_PORT} ${env.DOCKER_IMAGE_TAG_NAME}:${env.DOCKER_IMAGE_TAG_VERSION}'
-        //     //         }
-        //     //     }
-        //     // }
-        // }
+            
 
-        // stage('Deploy') {
-        //     steps {
-        //         echo "deploying the application"
-        //         sh "sudo nohup python3 app.py > log.txt 2>&1 &"
+        // stage(‘Deploy Image’) {
+        //     steps{
+        //         script {
+        //             docker.withRegistry('', registryCredential ) {
+        //                 dockerImage.push()
+        //             }
+        //         }
         //     }
         // }
+
 
     }
 
