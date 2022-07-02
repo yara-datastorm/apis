@@ -65,7 +65,7 @@ pipeline {
             steps {
                 // Scan all library vuln levels        
                 sh '\$(pwd)/mkdir vuln-scan'
-                sh 'docker run --rm -v "//var/run/docker.sock:/var/run/docker.sock" --mount type=bind,source="\$(pwd)"/vuln-scan,target=/home aquasec/trivy:0.18.3 image --format template --template @contrib/html.tpl -o ./home/trivy-ci-report-library.html --ignore-unfixed --vuln-type library python:3.10-slim'
+                sh 'docker run --rm -v "//var/run/docker.sock:/var/run/docker.sock" --mount type=bind,source="\$(pwd)"/vuln-scan,target=/home aquasec/trivy:0.18.3 image --format template --template @contrib/html.tpl -o ./home/trivy-ci-report-library.html --ignore-unfixed --exit-code 1 --vuln-type library python:3.10-slim'
             }
         }
         
@@ -86,9 +86,9 @@ pipeline {
         // stage('analyze') {
         //     steps {
         //         // Scan all library vuln  levels        
-        //         docker run --rm -v '//var/run/docker.sock:/var/run/docker.sock' --mount type=bind,source="$(pwd)"/root,target=/home aquasec/trivy:0.18.3 image --format template --template @contrib/html.tpl -o ./home/trivy-dc-report-library.html --ignore-unfixed --vuln-type library python:3.10-slim
+        //         docker run --rm -v '//var/run/docker.sock:/var/run/docker.sock' --mount type=bind,source="$(pwd)"/root,target=/home aquasec/trivy:0.18.3 image --format template --template @contrib/html.tpl -o ./home/trivy-dc-report-library.html --ignore-unfixed --exit-code 1 --vuln-type library python:3.10-slim
         //         // Scan all os vuln  levels 
-        //         docker run --rm -v '//var/run/docker.sock:/var/run/docker.sock' --mount type=bind,source="$(pwd)"/root,target=/home aquasec/trivy:0.18.3 image --format template --template @contrib/html.tpl -o ./home/trivy-dc-report-os.html --ignore-unfixed --vuln-type os python:3.10-slim
+        //         docker run --rm -v '//var/run/docker.sock:/var/run/docker.sock' --mount type=bind,source="$(pwd)"/root,target=/home aquasec/trivy:0.18.3 image --format template --template @contrib/html.tpl -o ./home/trivy-dc-report-os.html --ignore-unfixed --exit-code 1 --vuln-type os python:3.10-slim
             
         //     }
         // }
