@@ -1,5 +1,14 @@
 pipeline {
     agent any
+
+    agent {
+        docker {
+            image: 'trivy:latest'
+            args '--group-add docker'
+            reuseNode true
+        }
+    }
+
     environment {
         IMAGE_TAG_NAME = "dss"
         IMAGE_TAG_VERSION = 1.0
@@ -13,14 +22,6 @@ pipeline {
  
 
     stages {
-
-        // agent {
-        //     docker {
-        //         image: 'trivy:latest'
-        //         args '--group-add docker'
-        //         reuseNode true
-        //     }
-        // }
 
         stage('Build') {
             steps{
@@ -68,30 +69,30 @@ pipeline {
         // // }
 
 
-       stage('analyze') {
-            steps {
-                // Install trivy
-                sh 'curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin v0.18.3'
-                sh 'curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/html.tpl > html.tpl'
+    //    stage('analyze') {
+    //         steps {
+    //             // Install trivy
+    //             sh 'curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin v0.18.3'
+    //             sh 'curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/html.tpl > html.tpl'
 
-                // Scan all vuln levels
-                sh 'mkdir -p scan-reports'
-                sh 'trivy filesystem --ignore-unfixed --vuln-type os,library --format template --template "@html.tpl" -o scan-reports/nodjs-scan.html ./nodejs'
-                publishHTML target : [
-                    allowMissing: true,
-                    alwaysLinkToLastBuild: true,
-                    keepAll: true,
-                    reportDir: 'scan-reports',
-                    reportFiles: 'nodjs-scan.html',
-                    reportName: 'Trivy Scan',
-                    reportTitles: 'Trivy Scan'
-                ]
+    //             // Scan all vuln levels
+    //             sh 'mkdir -p scan-reports'
+    //             sh 'trivy filesystem --ignore-unfixed --vuln-type os,library --format template --template "@html.tpl" -o scan-reports/nodjs-scan.html ./nodejs'
+    //             publishHTML target : [
+    //                 allowMissing: true,
+    //                 alwaysLinkToLastBuild: true,
+    //                 keepAll: true,
+    //                 reportDir: 'scan-reports',
+    //                 reportFiles: 'nodjs-scan.html',
+    //                 reportName: 'Trivy Scan',
+    //                 reportTitles: 'Trivy Scan'
+    //             ]
 
-                // Scan again and fail on CRITICAL vulns
-                sh 'trivy filesystem --ignore-unfixed --vuln-type os,library --exit-code 1 --severity CRITICAL ./nodejs'
+    //             // Scan again and fail on CRITICAL vulns
+    //             sh 'trivy filesystem --ignore-unfixed --vuln-type os,library --exit-code 1 --severity CRITICAL ./nodejs'
 
-            }
-        }
+    //         }
+    //     }
             
             
 
