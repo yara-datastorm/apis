@@ -66,9 +66,9 @@ pipeline {
                 script {
                     // Scan all library vuln levels      
                     sh 'ls -la'  
-                    sh 'mkdir \$(pwd)/vuln-scan'
-                    sh 'ls -la'
-                    sh 'docker run --rm -v "//var/run/docker.sock:/var/run/docker.sock" --mount type=bind,source="\$(pwd)"/vuln-scan,target=/home aquasec/trivy:0.18.3 image --format template --template @contrib/html.tpl -o ./home/trivy-ci-report-library.html --ignore-unfixed --exit-code 1 --vuln-type library python:3.10-slim'
+                    // sh 'mkdir \$(pwd)/vuln-scan'
+                    // sh 'ls -la'
+                    // sh 'docker run --rm -v "//var/run/docker.sock:/var/run/docker.sock" --mount type=bind,source="\$(pwd)"/vuln-scan,target=/home aquasec/trivy:0.18.3 image --format template --template @contrib/html.tpl -o ./home/trivy-ci-report-library.html --ignore-unfixed --exit-code 1 --vuln-type library python:3.10-slim'
                 
                 }
             }
