@@ -58,10 +58,8 @@ pipeline {
         stage('analyzeee') {
             steps {
                 script {
-                    // Scan all library vuln levels      
-                    sh "ls -la"
+                    // Scan all library vuln levels
                     sh 'mkdir \$(pwd)/vuln-scan'
-                    sh 'ls -la'
                     sh 'docker run --rm -v "//var/run/docker.sock:/var/run/docker.sock" --mount type=bind,source="\$(pwd)"/vuln-scan,target=/home aquasec/trivy:0.18.3 image --format template --template @contrib/html.tpl -o ./home/trivy-ci-report-os-library.html --ignore-unfixed --exit-code 1 --vuln-type os,library python:3.10-slim'
                 
                 }
