@@ -68,6 +68,7 @@ pipeline {
 
                 script {
                     // my-image:${env.BUILD_ID}
+                    sh 'echo "70077007/$IMAGE_TAG_NAME:$BUILD_NUMBER"'
                     docker.withRegistry('', 'dockerHub-access' ) {
                         def customImage = docker.build("70077007/$IMAGE_TAG_NAME:$BUILD_NUMBER")
                         customImage.push()
