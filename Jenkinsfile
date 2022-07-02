@@ -59,40 +59,12 @@ pipeline {
         //         // pytest --verbose --junit-xml=test-reports/results.xml test_api.py
         //     }
         // }
-        
-        // // stage('Evaluate') {
-        // //     steps{
-        // //         script{
-        // //             sh 'docker scan --severity $IMAGE_VULNERABILITY dss:1.0'
-        // //         }
-        // //     }
-        // // }
 
 
-       stage('analyze') {
+        stage('analyze') {
             steps {
-                // // Install trivy
-                // sh 'curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin v0.18.3'
-                // sh 'curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/html.tpl > html.tpl'
-
-                // // Scan all vuln levels
-                // sh 'mkdir -p scan-reports'
-                // sh 'trivy filesystem --ignore-unfixed --vuln-type os,library --format template --template "@html.tpl" -o scan-reports/nodjs-scan.html ./nodejs'
-                // publishHTML target : [
-                //     allowMissing: true,
-                //     alwaysLinkToLastBuild: true,
-                //     keepAll: true,
-                //     reportDir: 'scan-reports',
-                //     reportFiles: 'nodjs-scan.html',
-                //     reportName: 'Trivy Scan',
-                //     reportTitles: 'Trivy Scan'
-                // ]
-
-                // // Scan again and fail on CRITICAL vulns
-                // sh 'trivy filesystem --ignore-unfixed --vuln-type os,library --exit-code 1 --severity CRITICAL ./nodejs'
-
-                sh 'docker run --rm trivy --skip-update fs -f json -o /src/trivy.json --exit-code 1 --severity CRITICAL,HIGH /src'
-
+                // Scan all library vuln levels        
+                docker run --rm -v '//var/run/docker.sock:/var/run/docker.sock' --mount type=bind,source="$(pwd)"/root,target=/home aquasec/trivy:0.18.3 image --format template --template @contrib/html.tpl -o ./home/trivy-ci-report-library.html --ignore-unfixed --vuln-type library python:3.10-slim            
             }
         }
             
@@ -105,6 +77,18 @@ pipeline {
         //                 dockerImage.push()
         //             }
         //         }
+        //     }
+        // }
+
+        
+
+        // stage('analyze') {
+        //     steps {
+        //         // Scan all library vuln  levels        
+        //         docker run --rm -v '//var/run/docker.sock:/var/run/docker.sock' --mount type=bind,source="$(pwd)"/root,target=/home aquasec/trivy:0.18.3 image --format template --template @contrib/html.tpl -o ./home/trivy-dc-report-library.html --ignore-unfixed --vuln-type library python:3.10-slim
+        //         // Scan all os vuln  levels 
+        //         docker run --rm -v '//var/run/docker.sock:/var/run/docker.sock' --mount type=bind,source="$(pwd)"/root,target=/home aquasec/trivy:0.18.3 image --format template --template @contrib/html.tpl -o ./home/trivy-dc-report-os.html --ignore-unfixed --vuln-type os python:3.10-slim
+            
         //     }
         // }
 
