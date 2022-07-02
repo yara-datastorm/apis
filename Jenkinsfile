@@ -56,7 +56,8 @@ pipeline {
 
        stage('analyze') {
             steps {
-                sh 'echo $IMAGE_TAG_NAME:$IMAGE_TAG_VERSION > anchore_images'
+                sh 'echo "$IMAGE_TAG_NAME:$IMAGE_TAG_VERSION"'
+                sh 'echo "$IMAGE_TAG_NAME:$IMAGE_TAG_VERSION" > anchore_images'
                 anchore name: 'anchore_images'
             }
         }
