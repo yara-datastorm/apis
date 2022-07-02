@@ -21,6 +21,12 @@ pipeline {
                 reuseNode true
             }
         }
+
+        stage('Build') {
+            steps{
+                echo "Holla"
+            }
+        }
             
         // stage('Build') {
         //     steps{
