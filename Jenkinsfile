@@ -11,8 +11,6 @@ pipeline {
 
         CTN_INTERNAL_PORT = 8080
         CTN_EXTERNAL_PORT = 7997
-
-        IMAGE_NAME = ${IMAGE_TAG_NAME}:${BUILD_NUMBER}
     }
 
 
@@ -94,7 +92,7 @@ pipeline {
         stage('Deploy') {
             steps{
                 script {
-                    sh 'my_image=$IMAGE_NAME envsubst < k8s/deploy.yml.tmpl > k8s/mydeploy.yaml'
+                    sh 'my_image=${IMAGE_TAG_NAME}:${BUILD_NUMBER} envsubst < k8s/deploy.yml.tmpl > k8s/mydeploy.yaml'
                     sh 'kubectl apply -f k8s/ --recursive'
                 }
             }
