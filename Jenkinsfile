@@ -19,6 +19,11 @@ pipeline {
         stage('Build') {
             steps{
                 script {
+                    try {
+                        sh "docker rmi -f $IMAGE_TAG_NAME:$BUILD_NUMBER"
+                    } catch (Exception e) {
+                        echo 'Exception occurred: ' + e.toString()
+                    }
                     sh "docker build -t $IMAGE_TAG_NAME:$BUILD_NUMBER ."
                 }
             }
