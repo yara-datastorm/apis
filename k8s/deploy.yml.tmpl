@@ -12,8 +12,8 @@ metadata:
     app: apis 
     role: backend
   annonations:
-  - dev: "Armel DREY"
-  - env: "dev"
+    dev: "Armel DREY"
+    env: "dev"
   namespace: salome
 spec:
   replicas: 1
@@ -44,10 +44,6 @@ spec:
   selector:
     app: apis
   type: NodePort
-  # sessionAffinity: None
-  # sessionAffinityConfig:
-  #   clientIP:
-  #     timeoutSeconds: 10800
   ports:
   - name: apis-port
     protocol: TCP
