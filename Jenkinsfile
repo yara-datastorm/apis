@@ -45,21 +45,28 @@ pipeline {
             }
         }
         
-        stage('Evaluate') {
-            steps{
-                script{
-                    sh 'docker scan --severity $IMAGE_VULNERABILITY dss:1.0'
-                }
-            }
-        }
-
-
-        // stage('Run Docker Container') {
-        //     steps {
-        //         echo 'docker run --name ds -d -p ${env.CTN_EXTERNAL_PORT}:${env.CTN_INTERNAL_PORT} ${env.IMAGE_TAG_NAME}:${env.IMAGE_TAG_VERSION}'
-        //         sh 'docker run --name ds -d -p ${env.CTN_EXTERNAL_PORT}:${env.CTN_INTERNAL_PORT} ${env.IMAGE_TAG_NAME}:${env.IMAGE_TAG_VERSION}'
+        // stage('Evaluate') {
+        //     steps{
+        //         script{
+        //             sh 'docker scan --severity $IMAGE_VULNERABILITY dss:1.0'
+        //         }
         //     }
         // }
+
+
+       stage('analyze') {
+            steps {
+                sh 'echo $IMAGE_TAG_NAME:$IMAGE_TAG_VERSION > anchore_images'
+                anchore name: 'anchore_images'
+            }
+        }
+        stage('teardown') {
+            steps {
+                sh'''
+                    for i in `cat anchore_images | awk '{print $1}'`;do docker rmi $i; done
+                '''
+            }
+        }
             
             
 
