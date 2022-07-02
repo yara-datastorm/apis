@@ -14,7 +14,7 @@ pipeline {
         IMAGE_TAG_VERSION = $BUILD_NUMBER
         IMAGE_VULNERABILITY = "medium"
 
-        CTN_NAME_TEST = "dss"
+        // IMAGE_TAG_NAME = "dss"
 
         CTN_INTERNAL_PORT = 8080
         CTN_EXTERNAL_PORT = 7997
@@ -36,16 +36,16 @@ pipeline {
             steps{
                 script {
                     try {
-                        sh "docker rm -f $CTN_NAME_TEST"
+                        sh "docker rm -f $IMAGE_TAG_NAME"
                     } catch (Exception e) {
                         echo 'Exception occurred: ' + e.toString()
                     }
                     
-                    sh "docker run -it -d -p $CTN_EXTERNAL_PORT:$CTN_INTERNAL_PORT --name $CTN_NAME_TEST $IMAGE_TAG_NAME:$IMAGE_TAG_VERSION"
+                    sh "docker run -it -d -p $CTN_EXTERNAL_PORT:$CTN_INTERNAL_PORT --name $IMAGE_TAG_NAME $IMAGE_TAG_NAME:$IMAGE_TAG_VERSION"
                     
-                    sh "docker exec $CTN_NAME_TEST pytest --verbose --junit-xml=reports/results.xml tests/ && ls"
+                    sh "docker exec $IMAGE_TAG_NAME pytest --verbose --junit-xml=reports/results.xml tests/ && ls"
                     
-                    sh "docker cp $CTN_NAME_TEST:/usr/src/app/reports \$(pwd)"
+                    sh "docker cp $IMAGE_TAG_NAME:/usr/src/app/reports \$(pwd)"
                     
                     junit "reports/*.xml"
                 }
@@ -76,7 +76,7 @@ pipeline {
                 script {
                     // my-image:${env.BUILD_ID}
                     docker.withRegistry('', 'dockerHub-access' ) {
-                        def customImage = docker.build("70077007/dss:1.1")
+                        def customImage = docker.build("70077007/$IMAGE_TAG_NAME:$BUILD_NUMBER")
                         customImage.push()
                      }
                 }
