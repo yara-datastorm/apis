@@ -43,7 +43,7 @@ pipeline {
                     
                     sh "docker exec $IMAGE_TAG_NAME pytest --verbose --junit-xml=reports/results.xml tests/ && ls"
                     
-                    sh "docker cp $IMAGE_TAG_NAME:/usr/src/app/reports \$(pwd)"
+                    sh "docker cp $IMAGE_TAG_NAME:/usr/src/app/reports $WORKSPACE"
 
                     
                     try {
@@ -63,11 +63,11 @@ pipeline {
                 script {
                     // Scan all library vuln levels
                     try {
-                        sh 'mkdir \$(pwd)/vuln-scan'
+                        sh 'mkdir $WORKSPACE/vuln-scan'
                     } catch (Exception e) {
                         echo 'Exception occurred: ' + e.toString()
                     }
-                    sh 'docker run --rm -v "//var/run/docker.sock:/var/run/docker.sock" --mount type=bind,source="\$(pwd)"/vuln-scan,target=/home aquasec/trivy:0.18.3 image --format template --template @contrib/html.tpl -o ./home/trivy-ci-report-library#$BUILD_NUMBER.html --timeout 10m --exit-code 0 --vuln-type library  --severity CRITICAL,HIGH $IMAGE_TAG_NAME:$BUILD_NUMBER'
+                    sh 'docker run --rm -v "//var/run/docker.sock:/var/run/docker.sock" --mount type=bind,source="$WORKSPACE"/vuln-scan,target=/home aquasec/trivy:0.18.3 image --format template --template @contrib/html.tpl -o ./home/trivy-ci-report-library#$BUILD_NUMBER.html --timeout 10m --exit-code 0 --vuln-type library  --severity CRITICAL,HIGH $IMAGE_TAG_NAME:$BUILD_NUMBER'
                 
                 }
             }
@@ -94,7 +94,7 @@ pipeline {
         //     steps{
         //         script {
         //             sh 'kubectl version'
-        //             // sh 'kubectl apply -f \$(pwd)/k8s/ --recursive'
+        //             // sh 'kubectl apply -f $WORKSPACE/k8s/ --recursive'
         //         }
         //     }
         // }
