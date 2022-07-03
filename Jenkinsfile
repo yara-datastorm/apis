@@ -108,11 +108,16 @@ pipeline {
                         echo 'Exception occurred: ' + e.toString()
                     } 
 
-                    sh 'my_image="70077007/$IMAGE_TAG_NAME:$BUILD_NUMBER" envsubst < k8s/deploy.yml.tmpl > k8s/deploy.yml'
+                    sh 'my_image="70077007/$IMAGE_TAG_NAME:$BUILD_NUMBER" envsubst < k8s/deploy.yml.tmpl > k8s/k8s-deploy.yml'
+                    
 
-                    sh 'src_k8s="$WORKSPACE/k8s/deploy.yml" envsubst < playbooks/deploy.yml.tmpl > playbooks/deploy.yml'
+                    // sh 'docker run --name ansible-deploy -d -v "$WORKSPACE/playbooks:/home" ansible:1.0 ansible-playbook -i ./home/hosts ./home/deploy.yml -v'
 
-                    sh 'docker run --name ansible-deploy -d -v "$WORKSPACE/playbooks:/home" ansible:1.0 ansible-playbook -i ./home/hosts ./home/deploy.yml -v'
+                    // kubernetesDeploy(configs:"$WORKSPACE/mydeploy.yml", kubeconfigId: "mykubeconfig")
+                    withKubeConfig([credentialsId: 'mykubeconfig', serverUrl: 'https://kubernetes.docker.internal:6443']) {
+                        sh 'kubectl apply -f $WORKSPACE/k8s/k8s-deploy.yml'
+                    }
+
                 }
             }
         }
