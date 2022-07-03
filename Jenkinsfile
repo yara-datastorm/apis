@@ -71,13 +71,13 @@ pipeline {
                     // html output for mail
                     sh 'docker run --rm -v "//var/run/docker.sock:/var/run/docker.sock" --mount type=bind,source="\$(pwd)"/vuln-scan,target=/home aquasec/trivy:0.18.3 image --format template --template @contrib/html.tpl -o ./home/trivy-ci-report-library#$BUILD_NUMBER.html --timeout 25m --exit-code 0 --vuln-type library  --severity CRITICAL,HIGH $IMAGE_TAG_NAME:$BUILD_NUMBER'
                     // xml output for junit
-                    sh 'docker run --rm -v "//var/run/docker.sock:/var/run/docker.sock" --mount type=bind,source="\$(pwd)"/reports,target=/home aquasec/trivy:0.18.3 image --format template --template "@contrib/junit.tpl" -o ./home/trivy-ci-report-library#$BUILD_NUMBER.xml --timeout 25m --exit-code 0 --vuln-type library  --severity CRITICAL,HIGH $IMAGE_TAG_NAME:$BUILD_NUMBER'
+                    // sh 'docker run --rm -v "//var/run/docker.sock:/var/run/docker.sock" --mount type=bind,source="\$(pwd)"/reports,target=/home aquasec/trivy:0.18.3 image --format template --template "@contrib/junit.tpl" -o ./home/trivy-ci-report-library#$BUILD_NUMBER.xml --timeout 25m --exit-code 0 --vuln-type library  --severity CRITICAL,HIGH $IMAGE_TAG_NAME:$BUILD_NUMBER'
                                     
-                    junit "reports/trivy-ci-report-library#$BUILD_NUMBER.xml"
+                    // junit "reports/trivy-ci-report-library#$BUILD_NUMBER.xml"
                 }
             }
         }
-
+        
 
         stage('Push image') {
             steps {
