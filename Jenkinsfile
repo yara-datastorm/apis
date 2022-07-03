@@ -105,7 +105,8 @@ pipeline {
             steps{
                 script {
                     sh 'my_image="70077007/$IMAGE_TAG_NAME:$BUILD_NUMBER" envsubst < k8s/deploy.yml.tmpl > k8s/deploy.yaml'
-                    sh 'kubectl apply -f \$(pwd)/k8s/ --recursive'
+                    sh 'kubectl version'
+                    // sh 'kubectl apply -f \$(pwd)/k8s/ --recursive'
                 }
             }
         }
