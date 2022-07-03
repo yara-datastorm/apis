@@ -6,11 +6,11 @@
     debug: msg="Hello World"
   - name: Espanol
     debug: msg="Holla Moundo"
-  # - name: "Create a pod"
-  #   kubernetes.core.k8s:
-  #     state: present
-  #     # namespace: test
-  #     src: /c/Users/user/.jenkins/workspace/apis/k8s/deploy.yml
+  - name: "Deployment k8s"
+    kubernetes.core.k8s:
+      state: present
+      # namespace: test
+      src: ${src_k8s}
 
 # ansible playbook testbook.yml --connection=local
 
