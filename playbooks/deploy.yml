@@ -1,7 +1,18 @@
-- hosts: localhost 
+- name: Deploy App 
+  hosts: localhost 
   become: false
   tasks: 
-  - name: echo a message 
-    debug: msg="this is working"
+  - name: English
+    debug: msg="Hello World"
+  - name: Espanol
+    debug: msg="Holla Moundo"
+  # - name: "Create a pod"
+  #   kubernetes.core.k8s:
+  #     state: present
+  #     # namespace: test
+  #     src: /c/Users/user/.jenkins/workspace/apis/k8s/deploy.yml
 
 # ansible playbook testbook.yml --connection=local
+
+# docker rm -f ansible3; docker run --name ansible3 -it -v "$WORKSPACE/playbooks:/home" ansible:1.0 ansible-playbook -i ./home/hosts ./home/deploy.yml -v
+
