@@ -1,0 +1,7 @@
+- hosts: localhost 
+  become: false
+  tasks: 
+  - name: echo a message 
+    debug: msg="this is working"
+
+# ansible playbook testbook.yml --connection=local
