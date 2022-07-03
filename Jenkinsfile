@@ -16,86 +16,99 @@ pipeline {
 
     stages {
             
-        // stage('Build') {
-        //     steps{
-        //         script {
-        //             try {
-        //                 sh "docker rmi -f $IMAGE_TAG_NAME:$BUILD_NUMBER"
-        //             } catch (Exception e) {
-        //                 echo 'Exception occurred: ' + e.toString()
-        //             }
-        //             sh "docker build -t $IMAGE_TAG_NAME:$BUILD_NUMBER ."
-        //         }
-        //     }
-        // }
+        stage('Build') {
+            steps{
+                script {
+                    try {
+                        sh "docker rmi -f $IMAGE_TAG_NAME:$BUILD_NUMBER"
+                    } catch (Exception e) {
+                        echo 'Exception occurred: ' + e.toString()
+                    }
+                    sh "docker build -t $IMAGE_TAG_NAME:$BUILD_NUMBER ."
+                }
+            }
+        }
 
 
-        // stage('Run and Unit Test') {
-        //     steps{
-        //         script {
-        //             try {
-        //                 sh "docker rm -f $IMAGE_TAG_NAME"
-        //             } catch (Exception e) {
-        //                 echo 'Exception occurred: ' + e.toString()
-        //             }
+        stage('Run and Unit Test') {
+            steps{
+                script {
+                    try {
+                        sh "docker rm -f $IMAGE_TAG_NAME"
+                    } catch (Exception e) {
+                        echo 'Exception occurred: ' + e.toString()
+                    }
                     
-        //             sh "docker run -it -d -p $CTN_EXTERNAL_PORT:$CTN_INTERNAL_PORT --name $IMAGE_TAG_NAME $IMAGE_TAG_NAME:$BUILD_NUMBER"
+                    sh "docker run -it -d -p $CTN_EXTERNAL_PORT:$CTN_INTERNAL_PORT --name $IMAGE_TAG_NAME $IMAGE_TAG_NAME:$BUILD_NUMBER"
                     
-        //             sh "docker exec $IMAGE_TAG_NAME pytest --verbose --junit-xml=reports/results.xml tests/ && ls"
+                    sh "docker exec $IMAGE_TAG_NAME pytest --verbose --junit-xml=reports/results.xml tests/ && ls"
                     
-        //             sh "docker cp $IMAGE_TAG_NAME:/usr/src/app/reports \$(pwd)"
+                    sh "docker cp $IMAGE_TAG_NAME:/usr/src/app/reports \$(pwd)"
 
                     
-        //             try {
-        //                 sh "docker rm -f $IMAGE_TAG_NAME"
-        //             } catch (Exception e) {
-        //                 echo 'Exception occurred: ' + e.toString()
-        //             }
+                    try {
+                        sh "docker rm -f $IMAGE_TAG_NAME"
+                    } catch (Exception e) {
+                        echo 'Exception occurred: ' + e.toString()
+                    }
                     
-        //             junit "reports/*.xml"
-        //         }
-        //     }
-        // }
+                    junit "reports/*.xml"
+                }
+            }
+        }
 
 
-        // stage('Analyze') {
-        //     steps {
-        //         script {
-        //             // Scan all library vuln levels
-        //             try {
-        //                 sh 'mkdir \$(pwd)/vuln-scan'
-        //             } catch (Exception e) {
-        //                 echo 'Exception occurred: ' + e.toString()
-        //             }
-        //             sh 'docker run --rm -v "//var/run/docker.sock:/var/run/docker.sock" --mount type=bind,source="\$(pwd)"/vuln-scan,target=/home aquasec/trivy:0.18.3 image --format template --template @contrib/html.tpl -o ./home/trivy-ci-report-os-library$BUILD_NUMBER.html --timeout 10m --exit-code 0 --vuln-type os,library  --severity CRITICAL,HIGH $IMAGE_TAG_NAME:$BUILD_NUMBER'
+        stage('Analyze') {
+            steps {
+                script {
+                    // Scan all library vuln levels
+                    try {
+                        sh 'mkdir \$(pwd)/vuln-scan'
+                    } catch (Exception e) {
+                        echo 'Exception occurred: ' + e.toString()
+                    }
+                    sh 'docker run --rm -v "//var/run/docker.sock:/var/run/docker.sock" --mount type=bind,source="\$(pwd)"/vuln-scan,target=/home aquasec/trivy:0.18.3 image --format template --template @contrib/html.tpl -o ./home/trivy-ci-report-os-library$BUILD_NUMBER.html --timeout 10m --exit-code 0 --vuln-type os,library  --severity CRITICAL,HIGH $IMAGE_TAG_NAME:$BUILD_NUMBER'
                 
-        //         }
-        //     }
-        // }
+                }
+            }
+        }
 
 
-        // stage('Push image') {
-        //     steps {
-        //         echo 'Starting to build docker image'
+        stage('Push image') {
+            steps {
+                echo 'Starting to build docker image'
 
-        //         script {
-        //             // my-image:${env.BUILD_ID}
-        //             sh 'echo "70077007/$IMAGE_TAG_NAME:$BUILD_NUMBER"'
-        //             docker.withRegistry('', 'dockerHub-access' ) {
-        //                 def customImage = docker.build("70077007/$IMAGE_TAG_NAME:$BUILD_NUMBER")
-        //                 customImage.push()
-        //              }
-        //         }
-        //     }
-        // }
+                script {
+                    // my-image:${env.BUILD_ID}
+                    sh 'echo "70077007/$IMAGE_TAG_NAME:$BUILD_NUMBER"'
+                    docker.withRegistry('', 'dockerHub-access' ) {
+                        def customImage = docker.build("70077007/$IMAGE_TAG_NAME:$BUILD_NUMBER")
+                        customImage.push()
+                     }
+                }
+            }
+        }
         
+
+        // stage('Deploy') {
+        //     steps{
+        //         script {
+        //             sh 'kubectl version'
+        //             // sh 'kubectl apply -f \$(pwd)/k8s/ --recursive'
+        //         }
+        //     }
+        // }
 
         stage('Deploy') {
             steps{
-                script {
-                    // sh 'my_image="70077007/$IMAGE_TAG_NAME:$BUILD_NUMBER" envsubst < k8s/deploy.yml.tmpl > k8s/deploy.yaml'
-                    sh 'kubectl version'
-                    // sh 'kubectl apply -f \$(pwd)/k8s/ --recursive'
+                script {                   
+                    try {
+                        sh 'docker rm -f ansible-deploy'
+                    } catch (Exception e) {
+                        echo 'Exception occurred: ' + e.toString()
+                    } 
+                    sh 'my_image="70077007/$IMAGE_TAG_NAME:$BUILD_NUMBER" envsubst < k8s/deploy.yml.tmpl > k8s/deploy.yml'
+                    sh 'docker run --name ansible-deploy -d -v "$WORKSPACE/playbooks:/home" ansible:1.0 ansible-playbook -i ./home/hosts ./home/deploy.yml -v'
                 }
             }
         }
