@@ -60,6 +60,9 @@ pipeline {
 
 
         stage('Analyze') {
+            when {
+                environment(name: "ENV", value: "prod")
+            }
             steps {
                 script {
                     // Scan all library vuln levels
@@ -155,5 +158,16 @@ pipeline {
 	// 		error('Stopping earlyâ€¦')
 	// 	}
 	// }   
+    post{
+        always{
+            mail to: "yaradatateam@gmail.com",
+            subject: "App Deploy - $BUILD_NUMBER",
+            body: "Hello, this is the end pipeline"
+            //dir ("tmp"){
+            //  emailext attachLog: true, attachmentsPattern: "**/*$BUILD_NUMBER-build.diff.html"
+            //}
+            //cleanWs()
+        }
+    }
 }
 
