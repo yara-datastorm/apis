@@ -1,5 +1,7 @@
 import uvicorn, os
 from fastapi import FastAPI, UploadFile, File
+from fastapi.middleware.cors import CORSMiddleware
+
 
 from mlearning import regressor_router
 from commons import common_router
@@ -14,6 +16,24 @@ app = FastAPI(
         "email": "armeldrey@gmail.com",
     },
 )
+
+
+origins = [
+    "http://localhost",
+    "http://localhost:3001",
+    "http://test.localhost:3001",
+    "http://localhost:3000",
+    "http://test.localhost:3000",
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 # app.include_router(linear_regressor_router, tags=["RegressorLinear"], prefix="/linear_regressor")
 # app.include_router(logistic_regressor_router,tags=["Regressorlogistic"], prefix="/logistic_regressor")
 # app.include_router(vendeur_router,tags=["vendeur"], prefix="/ventesim")
