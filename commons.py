@@ -21,6 +21,10 @@ class UploadWithUrlInputModel(BaseModel):
     data_url:str
     sep:str = ","
 
+class InfoColumnsInputModel(BaseModel):
+    filepath:str
+    sep:str = ","
+
 
 def chunksize_data(data_url,sep,chuncksize=1000):
     # chuncksize
@@ -112,17 +116,23 @@ async def read_url(data:UploadWithUrlInputModel):
 
 
 @common_router.get("/dataframe/columns", tags=["info"])   
-async def data_info_columns(filepath:str, sep:str=','):
+async def data_info_columns(data:InfoColumnsInputModel):
     """
     > **features:str**
     >> Variables à predire (ex: y)
     """
-    print("info columns...")
-    df = pd.read_csv(filepath, sep=sep)
-    return {'columns': list(df.columns)}
+    try:
+        filepath = data.filepath
+        sep = data.sep
+
+        print("info columns...")
+        df = pd.read_csv(filepath, sep=sep)
+        return {'columns': list(df.columns)}
+    except Exception as ex:
+        raise HTTPException(status_code=404, detail=str(ex))
 
 @common_router.get("/dataframe/columns_type", tags=["info"])   
-async def data_info(filepath:str, sep:str=','):
+async def data_info_columns_type(filepath:str, sep:str=','):
     """
     > **features:str**
     >> Variables à predire (ex: y)
