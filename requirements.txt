@@ -3,6 +3,7 @@ fastapi
 requests
 pytest
 
+pydantic
 email-validator
 
 pandas
