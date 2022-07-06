@@ -115,7 +115,7 @@ async def read_url(data:UploadWithUrlInputModel):
     return False
 
 
-@common_router.get("/dataframe/columns", tags=["info"])   
+@common_router.post("/dataframe/columns", tags=["info"])   
 async def data_info_columns(data:InfoColumnsInputModel):
     """
     > **features:str**
@@ -131,7 +131,7 @@ async def data_info_columns(data:InfoColumnsInputModel):
     except Exception as ex:
         raise HTTPException(status_code=404, detail=str(ex))
 
-@common_router.get("/dataframe/columns_type", tags=["info"])   
+@common_router.post("/dataframe/columns_type", tags=["info"])   
 async def data_info_columns_type(filepath:str, sep:str=','):
     """
     > **features:str**
