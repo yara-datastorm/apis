@@ -11,9 +11,15 @@ import shutil # save upload file
 import uuid
 
 import pandas as pd, pandas
+from pydantic import BaseModel
 
 
 common_router = APIRouter() # FastAPI()
+
+
+class UploadWithUrlInputModel(BaseModel):
+    data_url:str
+    sep:str = ","
 
 
 def chunksize_data(data_url,sep,chuncksize=1000):
@@ -73,32 +79,34 @@ async def upload_file(file:UploadFile=File(...)):
     return {"old_filename": file.filename, "filename": fname, "filepath": file_path}
 
 @common_router.post("/read_url", tags=["upload"])  
-async def read_url(data_url:str, sep:str=','):
+async def read_url(data:UploadWithUrlInputModel):
     """
     > **file:str**
     >> Variables à predire (ex: y)
     """
+    try:
+        data_url = data.data_url
+        sep = data.sep
 
-    if data_url.endswith('.csv'):
-        df = chunksize_data(data_url=data_url,sep=sep)
+        if data_url.endswith('.csv'):
+            df = chunksize_data(data_url=data_url,sep=sep)
+            
+            myuuid = uuid.uuid4()
+            fname = "{}#{}".format(myuuid, data_url.split('/')[-1])
+            file_path = "static/{}".format(fname)
+
+            df.to_csv(file_path, sep=sep, index=False)
+
+            memory, _ = memory_data(file_path)
+            if _ != None:
+                raise HTTPException(status_code=404, detail=_)
         
-        print()
-        
-        myuuid = uuid.uuid4()
-        fname = "{}#{}".format(myuuid, data_url.split('/')[-1])
-        file_path = "static/{}".format(fname)
-
-        df.to_csv(file_path, sep=sep, index=False)
-
-        memory, _ = memory_data(file_path)
-        if _ != None:
-            raise HTTPException(status_code=404, detail=_)
-        
-
-        return {"url": data_url, "filename": fname, "filepath": file_path}
-
-    else:
-        pass
+            return {"url": data_url, "filename": fname, "filepath": file_path}
+        else:
+            pass
+    
+    except Exception as ex:
+        raise HTTPException(status_code=404, detail=str(ex))
 
     return False
 
