@@ -1,5 +1,5 @@
 import uvicorn, os
-from fastapi import FastAPI, APIRouter, UploadFile, File
+from fastapi import FastAPI, APIRouter, UploadFile, File, HTTPException
 
 from fastapi.responses import ORJSONResponse, HTMLResponse, JSONResponse, UJSONResponse
 
@@ -61,15 +61,18 @@ async def upload_file(file:UploadFile=File(...)):
     > **file:str**
     >> Variables à predire (ex: y)
     """
-    myuuid = uuid.uuid4()
-    fname = "{}#{}".format(myuuid, file.filename)
-    file_path = "static/{}".format(fname)
-    with open(file_path, "wb") as buffer:
-        shutil.copyfileobj(file.file, buffer)
+    try:
+        myuuid = uuid.uuid4()
+        fname = "{}#{}".format(myuuid, file.filename)
+        file_path = "static/{}".format(fname)
+        with open(file_path, "wb") as buffer:
+            shutil.copyfileobj(file.file, buffer)
+    except Exception as ex:
+        raise HTTPException(status_code=404, detail=str(ex))
 
     return {"old_filename": file.filename, "filename": fname, "filepath": file_path}
 
-@common_router.get("/read_url", tags=["upload"])  
+@common_router.post("/read_url", tags=["upload"])  
 async def read_url(data_url:str, sep:str=','):
     """
     > **file:str**
@@ -87,9 +90,9 @@ async def read_url(data_url:str, sep:str=','):
 
         df.to_csv(file_path, sep=sep, index=False)
 
-        memory, _ = memory_data(file_path, limit=10)
+        memory, _ = memory_data(file_path)
         if _ != None:
-            return _
+            raise HTTPException(status_code=404, detail=_)
         
 
         return {"url": data_url, "filename": fname, "filepath": file_path}
