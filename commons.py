@@ -13,10 +13,15 @@ import uuid
 import pandas as pd, pandas
 from pydantic import BaseModel
 
-from main import logger
+# from main import logger
+from core.logger import get_logger
 
 
 common_router = APIRouter() # FastAPI()
+
+
+#in any file that import fn get_logger, you can set up local logger like:
+logger = get_logger(__name__)
 
 
 class UploadWithUrlInputModel(BaseModel):
