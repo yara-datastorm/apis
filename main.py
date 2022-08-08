@@ -1,4 +1,4 @@
-import uvicorn, os
+import uvicorn, os, logging
 from fastapi import FastAPI, UploadFile, File
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import RedirectResponse
@@ -6,6 +6,7 @@ from fastapi.responses import RedirectResponse
 from mlearning import regressor_router
 from commons import common_router
 
+from core.logger import get_logger
 
 app = FastAPI(
     title="YARA-DataStorm",
@@ -16,6 +17,11 @@ app = FastAPI(
         "email": "armeldrey@gmail.com",
     },
 )
+
+
+#in any file that import fn get_logger, you can set up local logger like:
+logger = get_logger(__name__)
+
 
 
 origins = [
@@ -60,12 +66,13 @@ app.include_router(common_router, prefix="/common")
 
 @app.get('/', response_class=RedirectResponse, include_in_schema=False)
 async def docs():
+    logger.info("doc page")
     return RedirectResponse(url='/docs')
 
 
 
 if __name__ == "__main__":
-    print("Yara started..")
+    logger.info("Yara started..")
 
     uvicorn.run("main:app", host="0.0.0.0", port=int(APP_PORT), reload=APP_RELOAD, workers=int(APP_WORKERS))
 
