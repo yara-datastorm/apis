@@ -13,7 +13,7 @@ import uuid
 import pandas as pd, pandas
 from pydantic import BaseModel
 
-# from main import logger
+from main import logger
 
 
 common_router = APIRouter() # FastAPI()
@@ -80,11 +80,11 @@ async def upload_file(file:UploadFile=File(...)):
         with open(file_path, "wb") as buffer:
             shutil.copyfileobj(file.file, buffer)
     except Exception as ex:
-        # logger.error(f'upload file {ex}')
+        logger.error(f'upload file {ex}')
         raise HTTPException(status_code=404, detail=str(ex))
 
     res = {"old_filename": file.filename, "filename": fname, "filepath": file_path}
-    # logger.error(f'upload file {res}')
+    logger.error(f'upload file {res}')
     return res
 
 @common_router.post("/read_url", tags=["upload"])  
