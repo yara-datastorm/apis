@@ -10,18 +10,18 @@ from pathlib import Path
 import shutil # save upload file
 import uuid
 
-import pandas as pd, pandas
+import pandas as pd
 from pydantic import BaseModel
 
-from main import logger
-# from core.logger import get_logger
+# from main import logger
+from core.logger import get_logger
 
 
 common_router = APIRouter() # FastAPI()
 
 
 #in any file that import fn get_logger, you can set up local logger like:
-# logger = get_logger(__name__)
+logger = get_logger()
 
 
 class UploadWithUrlInputModel(BaseModel):

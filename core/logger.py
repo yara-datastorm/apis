@@ -2,7 +2,7 @@ import logging
 
 
 # setup loggers
-def get_logger(name, level=logging.DEBUG) -> logging.Logger:
+def get_logger(name="sunuapp", level=logging.DEBUG) -> logging.Logger:
     # FORMAT = "[%(levelname)s  %(name)s %(module)s:%(lineno)s - %(funcName)s() - %(asctime)s]\t %(message)s \n"
     FORMAT = "[%(asctime)s.%(msecs)03dZ] %(name)s %(levelname)s %(message)s"
     TIME_FORMAT = "%d.%m.%Y %I:%M:%S %p"  # %Y-%m-%dT%H:%M:%S

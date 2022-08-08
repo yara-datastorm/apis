@@ -20,7 +20,7 @@ app = FastAPI(
 
 
 #in any file that import fn get_logger, you can set up local logger like:
-logger = get_logger("sunuapp")
+logger = get_logger()
 # logger = get_logger(__name__)
 
 
