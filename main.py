@@ -6,7 +6,7 @@ from fastapi.responses import RedirectResponse
 from mlearning import regressor_router
 from commons import common_router
 
-from core.logger import get_logger
+from core import logger 
 
 app = FastAPI(
     title="YARA-DataStorm",
