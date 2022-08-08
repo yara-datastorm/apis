@@ -21,7 +21,7 @@ common_router = APIRouter() # FastAPI()
 
 
 #in any file that import fn get_logger, you can set up local logger like:
-logger = get_logger()
+# logger = get_logger()
 
 
 class UploadWithUrlInputModel(BaseModel):
@@ -89,7 +89,7 @@ async def upload_file(file:UploadFile=File(...)):
         raise HTTPException(status_code=404, detail=str(ex))
 
     res = {"old_filename": file.filename, "filename": fname, "filepath": file_path}
-    logger.error(f'upload file {res}')
+    logger.info(f'upload file {res}')
     return res
 
 @common_router.post("/read_url", tags=["upload"])  
