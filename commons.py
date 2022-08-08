@@ -15,8 +15,8 @@ from pydantic import BaseModel
 
 # from main import logger
 # from core.logger import get_logger
-from core import logger 
-
+# from core import logger 
+from core.logger import *
 
 common_router = APIRouter() # FastAPI()
 
