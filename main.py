@@ -1,7 +1,7 @@
 import uvicorn, os
 from fastapi import FastAPI, UploadFile, File
 from fastapi.middleware.cors import CORSMiddleware
-
+from fastapi.responses import RedirectResponse
 
 from mlearning import regressor_router
 from commons import common_router
@@ -55,6 +55,12 @@ app.include_router(common_router, prefix="/common")
 
 
 # http://test.localhost:8017/subapi/docs#/
+
+
+
+@app.get('/', response_class=RedirectResponse, include_in_schema=False)
+async def docs():
+    return RedirectResponse(url='/docs')
 
 
 
