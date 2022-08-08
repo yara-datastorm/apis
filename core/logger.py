@@ -17,6 +17,3 @@ def get_logger(name="sunuapp", level=logging.DEBUG) -> logging.Logger:
     return logger
 
 logger = get_logger()
-
-# [INFO  main main:69 - docs() - 08.08.2022 08:40:01 AM]
-#          doc page

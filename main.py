@@ -9,21 +9,14 @@ from commons import common_router
 from core.logger import *
 
 app = FastAPI(
-    title="YARA-DataStorm",
-    description="""**ML APP**""",
+    title="AutoML",
+    description="""**Salome Auto Machine Learning App**""",
     version="0.0.1",
     contact={
         "name": "Armel DREY",
         "email": "armeldrey@gmail.com",
     },
 )
-
-
-#in any file that import fn get_logger, you can set up local logger like:
-# logger = get_logger()
-# logger = get_logger(__name__)
-
-
 
 origins = [
     "http://localhost",
@@ -67,14 +60,13 @@ app.include_router(common_router, prefix="/common")
 
 @app.get('/', response_class=RedirectResponse, include_in_schema=False)
 async def docs():
-    logger.info("doc page")
+    logger.info("redirect to docs page")
     return RedirectResponse(url='/docs')
 
 
 
 if __name__ == "__main__":
-    logger.info("Yara started..")
-
+    logger.info("AutoML started..")
     uvicorn.run("main:app", host="0.0.0.0", port=int(APP_PORT), reload=APP_RELOAD, workers=int(APP_WORKERS))
 
 

@@ -13,17 +13,13 @@ import uuid
 import pandas as pd
 from pydantic import BaseModel
 
-# from main import logger
-# from core.logger import get_logger
-# from core import logger 
+from core import chunksize_data, memory_data
+
+# import logger 
 from core.logger import *
 
+
 common_router = APIRouter() # FastAPI()
-
-
-#in any file that import fn get_logger, you can set up local logger like:
-# logger = get_logger()
-
 
 class UploadWithUrlInputModel(BaseModel):
     data_url:str
@@ -32,45 +28,6 @@ class UploadWithUrlInputModel(BaseModel):
 class InfoColumnsInputModel(BaseModel):
     filepath:str
     sep:str = ","
-
-
-def chunksize_data(data_url,sep,chuncksize=1000):
-    # chuncksize
-    chunks = pd.read_csv(filepath_or_buffer=data_url, sep=sep, chunksize=chuncksize)  # the number of rows per chunk
-
-    df = []
-    for dframe in chunks:
-        df.append(dframe)
-
-    df = pd.concat(df,sort=False)
-    return df
-
-def memory_data(file_path, limit=10000000):
-    # limit 10Mb
-    file_size = os.path.getsize(file_path)
-    unit = 'Bytes'
-
-    if file_size > limit: 
-        return None, {'msg': 'error: max file size is 10Mb'}
-    
-    if file_size < 10**6:
-        unit = 'Bytes'
-        filesize = file_size
-    elif file_size < 10**9:
-        unit = 'Kb'
-        filesize = file_size*10**-3
-    elif file_size < 10**12:
-        nit = 'Mb'
-        filesize = file_size*10**-6
-    elif file_size < 10**15:
-        unit = 'Gb'
-        filesize = file_size*10**-9
-    else:
-        unit = 'Tb'
-        filesize = file_size*10**-12
-        
-    return {'memory': f'{filesize}', 'unit': f'{unit}'}, None
-    
 
 
 @common_router.post("/upload_file", tags=["upload"])   
@@ -116,11 +73,16 @@ async def read_url(data:UploadWithUrlInputModel):
             if _ != None:
                 raise HTTPException(status_code=404, detail=_)
         
-            return {"url": data_url, "filename": fname, "filepath": file_path}
+            res = {"url": data_url, "filename": fname, "filepath": file_path}
+            logger.info(f'read url {res}')
+            return res
         else:
+            logger.info(f'read url : file is not csv')
             pass
+
     
     except Exception as ex:
+        logger.error(f'read url {ex}')
         raise HTTPException(status_code=404, detail=str(ex))
 
     return False
