@@ -82,15 +82,15 @@ async def read_url(data:UploadWithUrlInputModel):
                 myuuid = uuid.uuid4()
                 fname = "{}#{}".format(myuuid, data_url.split('/')[-1])
                 file_path = "static/{}".format(fname)
-
                 df.to_csv(file_path, sep=sep, index=False)
+
 
                 # memory, _ = memory_data(file_path)
                 # if _ != None:
                 #     raise HTTPException(status_code=404, detail=_)
             
                 file_size = convert_file_size(file_path)
-                res = {"url": data_url, "filename": fname, "filepath": file_path, "filesize": file_size}
+                res = {"url": data_url, "filename": fname, "filepath":file_path, "filesize":file_size}
                 logger.info(f'read url {res}')
                 return res
             else:
@@ -152,6 +152,7 @@ async def data_info_columns_type(filepath:str, sep:str=','):
         logger.error(f'data info columns {res}')
         raise HTTPException(status_code=404, detail=str(ex))
 
+
 @common_router.get("/dataframe/shape", tags=["info"])   
 async def data_info_shape(filepath:str, sep:str=','):
     """
@@ -160,7 +161,7 @@ async def data_info_shape(filepath:str, sep:str=','):
     """
     try:
         df = pd.read_csv(filepath, sep=sep)
-        res = {'dim': str(df.shape)}
+        res = {'raw': int(df.shape[1]), 'columns': int(df.shape[0])}
         logger.info(f'data info columns {res}')
         return res
     except Exception as ex:
