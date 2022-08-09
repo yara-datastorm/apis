@@ -14,7 +14,7 @@ import pandas as pd
 from pydantic import BaseModel
 
 from core import chunksize_data, memory_data, validate_url
-from core.convert_file_size import file_size, convert_bytes
+# from core.convert_file_size import file_size, convert_bytes
 
 # import logger 
 from core.logger import *
@@ -38,6 +38,23 @@ class InfoColumnsInputModel(BaseModel):
 def get_status():
     return {"status": "ok"}
 
+def file_size(file_path):
+    """
+    this function will return the file size
+    """
+    if os.path.isfile(file_path):
+        file_info = os.stat(file_path)
+        print(file_info)
+
+        fsize = file_info.st_size
+        print(fsize)
+
+        for x in ['bytes', 'KB', 'MB', 'GB', 'TB']:
+            if fsize < 1024.0:
+                return f"{fsize} {x}"
+                # return "%3.1f %s" % (fsize, x)
+            fsize /= 1024.0
+        return str(fsize) 
 
 @common_router.post("/upload_file", tags=["upload"])   
 async def upload_file(file:UploadFile=File(...)):
