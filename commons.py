@@ -38,7 +38,7 @@ class InfoColumnsInputModel(BaseModel):
 def get_status():
     return {"status": "ok"}
 
-def file_size(file_path):
+def file_size_(file_path):
     """
     this function will return the file size
     """
@@ -76,7 +76,7 @@ async def upload_file(file:UploadFile=File(...)):
         logger.error(f'upload file {ex}')
         raise HTTPException(status_code=404, detail=str(ex))
 
-    file_size = file_size(file_path)
+    file_size = file_size_(file_path)
     res = {"old_filename": file.filename, "filename": fname, "filepath": file_path, "filesize":file_size}
     logger.info(f'upload file {res}')
     return res
