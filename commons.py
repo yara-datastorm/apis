@@ -80,7 +80,6 @@ async def read_url(data:UploadWithUrlInputModel):
             logger.info(f'read url : file is not csv')
             pass
 
-    
     except Exception as ex:
         logger.error(f'read url {ex}')
         raise HTTPException(status_code=404, detail=str(ex))
@@ -100,8 +99,12 @@ async def data_info_columns(data:InfoColumnsInputModel):
 
         print("info columns...")
         df = pd.read_csv(filepath, sep=sep)
-        return {'columns': list(df.columns)}
+
+        res = {'columns': list(df.columns)}
+        logger.info(f'data info columns {res}')
+        return res
     except Exception as ex:
+        logger.error(f'data info columns {ex}')
         raise HTTPException(status_code=404, detail=str(ex))
 
 @common_router.post("/dataframe/columns_type", tags=["info"])   
@@ -110,23 +113,25 @@ async def data_info_columns_type(filepath:str, sep:str=','):
     > **features:str**
     >> Variables à predire (ex: y)
     """
-    print("info columns...")
-    df = pd.read_csv(filepath, sep=sep)
-    df = pd.DataFrame(df.dtypes, columns=["type"])
-    
-    
-    df['type'] = df['type'].apply(str)
-    df = df.reset_index()
+    try:
+        df = pd.read_csv(filepath, sep=sep)
+        df = pd.DataFrame(df.dtypes, columns=["type"])
+        
+        df['type'] = df['type'].apply(str)
+        df = df.reset_index()
 
-    df.rename({'index':'column'}, axis=1, inplace=True)
-    
-    res = df.to_dict('records')
-    print(res)
+        df.rename({'index':'column'}, axis=1, inplace=True)
+        res = df.to_dict('records')
 
-    # static/f0369d5d-1c22-4599-84a1-79e0dfb63fae#credit_data.csv
-    print('##')
+        # static/f0369d5d-1c22-4599-84a1-79e0dfb63fae#credit_data.csv
 
-    return list(res)
+        res = list(res)
+        logger.info(f'data info columns {res}')
+        return res
+
+    except Exception as ex:
+        logger.error(f'data info columns {res}')
+        raise HTTPException(status_code=404, detail=str(ex))
 
 @common_router.get("/dataframe/shape", tags=["info"])   
 async def data_info_shape(filepath:str, sep:str=','):
@@ -134,10 +139,14 @@ async def data_info_shape(filepath:str, sep:str=','):
     > **features:str**
     >> Variables à predire (ex: y)
     """
-    print("info shape...")
-    df = pd.read_csv(filepath, sep=sep)
-    print(df.shape)
-    return {'dim': str(df.shape)}
+    try:
+        df = pd.read_csv(filepath, sep=sep)
+        res = {'dim': str(df.shape)}
+        logger.info(f'data info columns {res}')
+        return res
+    except Exception as ex:
+        logger.error(f'data info columns {res}')
+        raise HTTPException(status_code=404, detail=str(ex))
 
 
 
