@@ -13,8 +13,8 @@ import uuid
 import pandas as pd
 from pydantic import BaseModel
 
-from core import chunksize_data, memory_data, validate_url, convert_file_size
-# from core.convert_file_size import file_size, convert_bytes
+from core import chunksize_data, memory_data, validate_url
+from core.convert_file_size import convert_file_size
 
 # import logger 
 from core.logger import *
