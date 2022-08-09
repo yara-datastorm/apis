@@ -13,7 +13,8 @@ import uuid
 import pandas as pd
 from pydantic import BaseModel
 
-from core import chunksize_data, memory_data, validate_url, convert_file_size
+from core import chunksize_data, memory_data, validate_url
+from core.convert_file_size import file_size, convert_bytes
 
 # import logger 
 from core.logger import *
@@ -58,7 +59,7 @@ async def upload_file(file:UploadFile=File(...)):
         logger.error(f'upload file {ex}')
         raise HTTPException(status_code=404, detail=str(ex))
 
-    file_size = convert_file_size(file_path)
+    file_size = file_size(file_path)
     res = {"old_filename": file.filename, "filename": fname, "filepath": file_path, "filesize":file_size}
     logger.info(f'upload file {res}')
     return res
