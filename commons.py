@@ -13,7 +13,7 @@ import uuid
 import pandas as pd
 from pydantic import BaseModel
 
-from core import chunksize_data, memory_data, validate_url
+from core import chunksize_data, memory_data, validate_url, convert_file_size
 
 # import logger 
 from core.logger import *
@@ -28,6 +28,14 @@ class UploadWithUrlInputModel(BaseModel):
 class InfoColumnsInputModel(BaseModel):
     filepath:str
     sep:str = ","
+
+
+
+# ========================================
+
+@common_router.get("/status")
+def get_status():
+    return {"status": "ok"}
 
 
 @common_router.post("/upload_file", tags=["upload"])   
@@ -45,11 +53,12 @@ async def upload_file(file:UploadFile=File(...)):
         file_path = "static/{}".format(fname)
         with open(file_path, "wb") as buffer:
             shutil.copyfileobj(file.file, buffer)
+
     except Exception as ex:
         logger.error(f'upload file {ex}')
         raise HTTPException(status_code=404, detail=str(ex))
 
-    res = {"old_filename": file.filename, "filename": fname, "filepath": file_path}
+    res = {"old_filename": file.filename, "filename": fname, "filepath": file_path, "filesize":convert_file_size(file_path)}
     logger.info(f'upload file {res}')
     return res
 
