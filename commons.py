@@ -13,7 +13,7 @@ import uuid
 import pandas as pd
 from pydantic import BaseModel
 
-from core import chunksize_data, memory_data
+from core import chunksize_data, memory_data, validate_url
 
 # import logger 
 from core.logger import *
@@ -39,6 +39,9 @@ async def upload_file(file:UploadFile=File(...)):
     try:
         myuuid = uuid.uuid4()
         fname = "{}#{}".format(myuuid, file.filename)
+        fname = fname.split(' ')
+        fname = ''.join(fname)
+
         file_path = "static/{}".format(fname)
         with open(file_path, "wb") as buffer:
             shutil.copyfileobj(file.file, buffer)
@@ -60,31 +63,34 @@ async def read_url(data:UploadWithUrlInputModel):
         data_url = data.data_url
         sep = data.sep
 
-        if data_url.endswith('.csv'):
-            df = chunksize_data(data_url=data_url,sep=sep)
+        if validate_url(data_url): # if data_url is link
+            if data_url.endswith('.csv'):
+                df = chunksize_data(data_url=data_url,sep=sep)
+                
+                myuuid = uuid.uuid4()
+                fname = "{}#{}".format(myuuid, data_url.split('/')[-1])
+                file_path = "static/{}".format(fname)
+
+                df.to_csv(file_path, sep=sep, index=False)
+
+                memory, _ = memory_data(file_path)
+                if _ != None:
+                    raise HTTPException(status_code=404, detail=_)
             
-            myuuid = uuid.uuid4()
-            fname = "{}#{}".format(myuuid, data_url.split('/')[-1])
-            file_path = "static/{}".format(fname)
-
-            df.to_csv(file_path, sep=sep, index=False)
-
-            memory, _ = memory_data(file_path)
-            if _ != None:
-                raise HTTPException(status_code=404, detail=_)
-        
-            res = {"url": data_url, "filename": fname, "filepath": file_path}
-            logger.info(f'read url {res}')
-            return res
+                res = {"url": data_url, "filename": fname, "filepath": file_path}
+                logger.info(f'read url {res}')
+                return res
+            else:
+                logger.info(f'read url : file is not csv')
+                pass
         else:
-            logger.info(f'read url : file is not csv')
-            pass
-
+            logger.error(f'{data_url} is not link')
+            raise HTTPException(status_code=404, detail=f"{data_url} is not link") 
     except Exception as ex:
         logger.error(f'read url {ex}')
         raise HTTPException(status_code=404, detail=str(ex))
 
-    return False
+    raise HTTPException(status_code=404, detail=str('read url  error'))
 
 
 @common_router.post("/dataframe/columns", tags=["info"])   
