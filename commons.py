@@ -58,7 +58,8 @@ async def upload_file(file:UploadFile=File(...)):
         logger.error(f'upload file {ex}')
         raise HTTPException(status_code=404, detail=str(ex))
 
-    res = {"old_filename": file.filename, "filename": fname, "filepath": file_path, "filesize":convert_file_size(file_path)}
+    file_size = convert_file_size(file_path)
+    res = {"old_filename": file.filename, "filename": fname, "filepath": file_path, "filesize":file_size}
     logger.info(f'upload file {res}')
     return res
 
