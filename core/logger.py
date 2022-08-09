@@ -16,4 +16,4 @@ def get_logger(name="sunuapp", level=logging.DEBUG) -> logging.Logger:
     logger = logging.getLogger(name)
     return logger
 
-logger = get_logger()
+logger = get_logger(__name__)
