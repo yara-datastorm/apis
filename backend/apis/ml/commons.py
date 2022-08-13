@@ -3,7 +3,7 @@ from fastapi import FastAPI, APIRouter, UploadFile, File, HTTPException
 
 from fastapi.responses import ORJSONResponse, HTMLResponse, JSONResponse, UJSONResponse
 
-from models.LinearRegressor import LinearRegressorModel
+from backend.apis.ml.models.regressor.pytorch.LinearRegressor import LinearRegressorModel
 from models.LogisticRegressor import LogisticRegressorModel
 
 from pathlib import Path
@@ -13,7 +13,9 @@ import uuid
 import pandas as pd
 from pydantic import BaseModel
 
-from core import chunksize_data, memory_data, validate_url
+from core import memory_data
+from core.chunksize_data import chunksize_data
+from core.validate_url import validate_url
 from core.convert_file_size import convert_file_size
 
 # import logger 
@@ -51,7 +53,7 @@ async def upload_file(file:UploadFile=File(...)):
         fname = "{}#{}".format(myuuid, file.filename)
         fname = fname.split(' ')
         fname = ''.join(fname)
-
+        
         file_path = "static/{}".format(fname)
         with open(file_path, "wb") as buffer:
             shutil.copyfileobj(file.file, buffer)
@@ -60,10 +62,11 @@ async def upload_file(file:UploadFile=File(...)):
         logger.error(f'upload file {ex}')
         raise HTTPException(status_code=404, detail=str(ex))
 
-    file_size = convert_file_size(file_path)
+    file_size = await convert_file_size(file_path)
     res = {"old_filename": file.filename, "filename": fname, "filepath": file_path, "filesize":file_size}
     logger.info(f'upload file {res}')
     return res
+
 
 @common_router.post("/read_url", tags=["upload"])  
 async def read_url(data:UploadWithUrlInputModel):
@@ -71,39 +74,45 @@ async def read_url(data:UploadWithUrlInputModel):
     > **file:str**
     >> Variables à predire (ex: y)
     """
+    # return str(dir(validate_url))
+
     try:
         data_url = data.data_url
         sep = data.sep
 
-        if validate_url(data_url): # if data_url is link
-            if data_url.endswith('.csv'):
-                df = chunksize_data(data_url=data_url,sep=sep)
+        if validate_url(url=data_url): # if data_url is link
+
+            if data_url.endswith('.csv'): # csv management
+                df = await chunksize_data(data_url=data_url,sep=sep)
                 
                 myuuid = uuid.uuid4()
                 fname = "{}#{}".format(myuuid, data_url.split('/')[-1])
                 file_path = "static/{}".format(fname)
                 df.to_csv(file_path, sep=sep, index=False)
 
-
-                # memory, _ = memory_data(file_path)
-                # if _ != None:
-                #     raise HTTPException(status_code=404, detail=_)
-            
-                file_size = convert_file_size(file_path)
+                file_size = await convert_file_size(file_path)
                 res = {"url": data_url, "filename": fname, "filepath":file_path, "filesize":file_size}
+                # res = {"url": data_url, "filename": fname, "filepath":file_path}
                 logger.info(f'read url {res}')
+                print(f'read url {res}')
                 return res
+
+            elif data_url.endswith('.xls') or data_url.endswith('.xlsx'): # xls management
+                logger.info(f'read url : le format xls ou xlsx n est pas prise en charge')
+                return {'message':'le fichier est au format xls ou xlsx'}
+
             else:
                 logger.info(f'read url : file is not csv')
-                pass
+                raise HTTPException(status_code=400, detail=f"read url : quelques chose ne va pas")
+
         else:
             logger.error(f'{data_url} is not link')
-            raise HTTPException(status_code=404, detail=f"{data_url} is not link") 
+            raise HTTPException(status_code=400, detail=f"{data_url} is not link")
     except Exception as ex:
         logger.error(f'read url {ex}')
-        raise HTTPException(status_code=404, detail=str(ex))
+        raise HTTPException(status_code=500, detail="error de lecture "+str(ex))
 
-    raise HTTPException(status_code=404, detail=str('read url  error'))
+    # raise HTTPException(status_code=404, detail=str('read url  error'))
 
 
 @common_router.post("/dataframe/columns", tags=["info"])   

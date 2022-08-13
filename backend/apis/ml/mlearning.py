@@ -1,17 +1,12 @@
 import uvicorn, os
-from fastapi import FastAPI, APIRouter, UploadFile, File
+from fastapi import FastAPI, APIRouter, File
 
-from fastapi.responses import ORJSONResponse, HTMLResponse, JSONResponse, UJSONResponse
-
-from models.LinearRegressor import LinearRegressorModel
+from backend.apis.ml.models.regressor.pytorch.LinearRegressor import LinearRegressorModel
 from models.LogisticRegressor import LogisticRegressorModel
 
 from pathlib import Path
 import shutil # save upload file
 import uuid
-
-import pandas as pd, pandas
-
 
 regressor_router = APIRouter() # FastAPI()
 

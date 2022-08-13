@@ -8,9 +8,11 @@ from commons import common_router
 
 from core.logger import *
 
+import pyfiglet
+
 app = FastAPI(
     title="AutoML",
-    description="""**Salome Auto Machine Learning App**""",
+    description="""**Auto Machine Learning App**""",
     version="0.0.1",
     contact={
         "name": "Armel DREY",
@@ -39,8 +41,8 @@ app.add_middleware(
 # app.include_router(vendeur_router,tags=["vendeur"], prefix="/ventesim")
 
 
-APP_PORT = os.environ.get("APP_PORT", default=8080)
-APP_RELOAD = os.environ.get("APP_RELOAD", default=False)
+APP_PORT = os.environ.get("APP_PORT", default=8070)
+APP_RELOAD = os.environ.get("APP_RELOAD", default=True)
 APP_WORKERS = os.environ.get("APP_WORKERS", default=1)
 
 
@@ -67,6 +69,11 @@ async def docs():
 
 if __name__ == "__main__":
     logger.info("AutoML started..")
+
+
+    result = pyfiglet.figlet_format("SALOME AutoML")
+    print(result)
+
     uvicorn.run("main:app", host="0.0.0.0", port=int(APP_PORT), reload=APP_RELOAD, workers=int(APP_WORKERS))
 
 
