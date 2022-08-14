@@ -8,7 +8,7 @@
 # dummies_col = pd.get_dummies(df['pays'])
 # df = df.join(dummies_col)
 
-from sklearn.datasets import make_classification
+# from sklearn.datasets import make_classification
 from sklearn.linear_model import LogisticRegression, LinearRegression
 from sklearn.model_selection import train_test_split
 from sklearn.pipeline import make_pipeline, Pipeline
@@ -20,11 +20,15 @@ import pandas as pd
 import sys, os
 
 # importing grand-parent folder
-ml_folder = os.path.dirname(os.path.abspath('../'))
+ml_folder = os.path.dirname(os.path.abspath('./ml'))
 sys.path.insert(0,ml_folder)
+print(ml_folder)
 
 from core.unavailable_columns import unavailable_columns
-from core.list_of_available_model import list_of_available_model
+from core.get_label_type import get_label_type
+from core.transform_feature_column import transform_feature_column
+from core.imputation_feature_colmn import imputation_feature_colmn
+
 
 # =====
 df = pd.read_csv(ml_folder+'/core/data.csv')
@@ -84,5 +88,5 @@ for idx, i in enumerate(pipelines):
 
 
 
-
-
+zz = imputation_feature_colmn(df, ['age','sex','revenu'])
+print(zz)

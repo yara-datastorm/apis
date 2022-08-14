@@ -1,17 +1,26 @@
 import sys, os, pandas as pd
-from sklearn.linear_model import LinearRegression, LogisticRegression
-from sklearn.metrics import mean_squared_error, r2_score, mean_absolute_error
-from sklearn.model_selection import train_test_split
 
+# model
+from sklearn.linear_model import LinearRegression, LogisticRegression
 from xgboost import XGBRegressor
+# selection
+from sklearn.model_selection import train_test_split
+# metric
+from sklearn.metrics import mean_squared_error, r2_score, mean_absolute_error
+
 
 
 # importing ml folder
 ml_folder = os.path.dirname(os.path.abspath('../'))
 sys.path.insert(0,ml_folder)
+
 from core.unavailable_columns import unavailable_columns
 from core.get_label_type import get_label_type
 from core.chunksize_data import chunksize_data
+from core.transform_feature_column import transform_feature_column
+from core.imputation_feature_colmn import imputation_feature_colmn
+from core.delete_row_where_label_is_empty import delete_row_where_label_is_empty
+
 
 
 class RegressorModel:
@@ -22,6 +31,25 @@ class RegressorModel:
             "logistic":LogisticRegression(),
             "xgboost":XGBRegressor()
         }
+    def get_data(self):
+        # chunksize_data
+        pass
+    def transform(self):
+        # unavailable_columns
+        # delete_row_where_label_is_empty
+        # transform_feature_column
+        # imputation_feature_colmn
+        pass
+    def split_data(self):
+        # train_test_split(features, label, shuffle=shuffle, train_size=train_size, random_state=random_state)
+        pass
+    def pipeline(self):
+        # get_label_type
+        pass
+    def evaluate_model(self):
+        pass
+    def get_best_model(self):
+        pass
 
     # --> chunksize_data
     # def read_data(self, url:str, sep:str=","):
