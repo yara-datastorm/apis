@@ -1,58 +1,30 @@
+from concurrent.futures import process
 import uvicorn, os
-from fastapi import FastAPI, APIRouter, File
+from fastapi import FastAPI, APIRouter, File, Request 
 
-from backend.apis.ml.models.regressor.pytorch.LinearRegressor import LinearRegressorModel
-from models.LogisticRegressor import LogisticRegressorModel
+import requests
 
-from pathlib import Path
-import shutil # save upload file
-import uuid
+from models.regressor.sklearn.Regressor import RegressorModel as SklearnRegressorModel
+from models.main import process      
+
+from commons import get_status
 
 regressor_router = APIRouter() # FastAPI()
 
+# {"data_url": "static/ff54b71e-9c41-4f13-be45-45d6395a4aa5#1987.csv","data_sep": ",","label": "ArrTime"}
+@regressor_router.post("/processs", tags=["saml"])
+async def processs(file_info:dict):
+    # filepath:str, label:str, sep=str
+    # process = await process(label_type="quantitative",file_info={"data_url":filepath,"data_sep": sep,"label":label})
 
+    print('dans process...')
+    print(get_status())
+    # url = "http://localhost:8070/common/status"
+    # print(requests.get(url))
+    # res = process(label_type="quantitative",models=[SklearnRegressorModel(**file_info)])
+    
+    return {"result":"res"}
+    return {"result":res}
 
-# home
-url1 = "https://raw.githubusercontent.com/datagy/data/main/insurance.csv" # x=charges y=age
-url2 = "https://raw.githubusercontent.com/Opensourcefordatascience/Data-sets/master/difficile.csv" # x=libido y=dose
-@regressor_router.post("/processing", tags=["regressor"])   
-async def home(filepath:str, features:str="dose", label:str="libido"):
-    """
-    > **features:str**
-    >> Variables à predire (ex: y)
-    ---
-    > **label:str**
-    >> Variables explicatives(ex: var1,var2,...)
-    """
-
-    # Creating two arrays for the feature and target
-    features = features.split(",")
-    label = label
-
-    result = {}
-
-    for model in [LinearRegressorModel(), LogisticRegressorModel()]:
-
-        # model = LogisticRegressorModel()
-        model_name = model.model_name
-
-        df = model.read_data(url=filepath)
-
-        X = df[features].astype(int)
-        y = df[label].astype(int)
-
-        dataframe = model.split_data(features=X, label=y)
-        model.train_data(dataframe=dataframe)
-
-        pred = model.predict_data(dataframe=dataframe)
-        
-        y_test = dataframe[-1]
-        evaluate = model.evaluate_data(y_test=y_test, predictions=pred)
-        
-        result[model_name] = evaluate
-
-        print('---------')
-
-    return result
 
 

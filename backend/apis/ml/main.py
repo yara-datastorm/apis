@@ -43,7 +43,7 @@ app.add_middleware(
 
 APP_PORT = os.environ.get("APP_PORT", default=8070)
 APP_RELOAD = os.environ.get("APP_RELOAD", default=True)
-APP_WORKERS = os.environ.get("APP_WORKERS", default=1)
+APP_WORKERS = os.environ.get("APP_WORKERS", default=3)
 
 
 
@@ -71,7 +71,7 @@ if __name__ == "__main__":
     logger.info("AutoML started..")
 
 
-    result = pyfiglet.figlet_format("SALOME AutoML")
+    result = pyfiglet.figlet_format("SALOME")
     print(result)
 
     uvicorn.run("main:app", host="0.0.0.0", port=int(APP_PORT), reload=APP_RELOAD, workers=int(APP_WORKERS))

@@ -1,6 +1,6 @@
 import pandas as pd
 
-async def chunksize_data(data_url,sep,chuncksize=1000,encoding='latin-1') -> pd.DataFrame:
+def chunksize_data(data_url,sep,chuncksize=1000,encoding='latin-1') -> pd.DataFrame:
     # chuncksize
     chunks = pd.read_csv(filepath_or_buffer=data_url, sep=sep, chunksize=chuncksize, encoding=encoding)  # the number of rows per chunk
 

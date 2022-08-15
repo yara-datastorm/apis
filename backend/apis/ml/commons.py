@@ -3,8 +3,7 @@ from fastapi import FastAPI, APIRouter, UploadFile, File, HTTPException
 
 from fastapi.responses import ORJSONResponse, HTMLResponse, JSONResponse, UJSONResponse
 
-from backend.apis.ml.models.regressor.pytorch.LinearRegressor import LinearRegressorModel
-from models.LogisticRegressor import LogisticRegressorModel
+from models.regressor.sklearn.Regressor import RegressorModel
 
 from pathlib import Path
 import shutil # save upload file

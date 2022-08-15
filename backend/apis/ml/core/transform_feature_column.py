@@ -17,8 +17,10 @@ import pandas as pd
 from sklearn.preprocessing import LabelEncoder
 
 
-def transform_feature_column(dataframe, features):
+def transform_feature_column(dataframe, label):
     try:
+        features = list(set(dataframe.columns) - set([label])) # columns without label
+
         for col in features:
             # int 
             if dataframe[col].dtype=='int64':
