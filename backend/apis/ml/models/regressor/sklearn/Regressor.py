@@ -146,7 +146,10 @@ class RegressorModel:
             
             other.append(other_dict)
 
-        other.remove(best_model)
+        try:
+            other.remove(best_model)
+        except:
+            pass 
 
         self.result_best_model = best_model
 
